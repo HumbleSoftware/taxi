@@ -19,7 +19,7 @@ module.exports = function(grunt) {
     },
     concat: {
       dist: {
-        src: ['<banner:meta.banner>', '<file_strip_banner:src/**/*.js>'],
+        src: ['<banner:meta.banner>', 'src/**/*.js'],
         dest: 'dist/<%= pkg.name %>.js'
       }
     },
@@ -30,8 +30,8 @@ module.exports = function(grunt) {
       }
     },
     watch: {
-      files: '<config:lint.files>',
-      tasks: 'lint qunit'
+      files: ['<config:lint.files>', 'index.html'],
+      tasks: 'lint qunit concat reload'
     },
     jshint: {
       options: {
@@ -53,10 +53,18 @@ module.exports = function(grunt) {
     server: {
       port: 8999,
       base: '.'
+    },
+    reload: {
+      port: 8001,
+      proxy: {
+        port: 8999,
+        host: 'localhost'
+      }
     }
   });
 
   // Default task.
   grunt.registerTask('default', 'lint qunit concat min');
 
+  grunt.loadNpmTasks('grunt-reload');
 };
