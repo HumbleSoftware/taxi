@@ -18,6 +18,10 @@ module.exports = function(grunt) {
       files: ['test/**/*.html']
     },
     concat: {
+      basic: {
+        src: ['vendor/**/*.js'],
+        dest: 'dist/vendor.js'
+      },
       dist: {
         src: ['<banner:meta.banner>', 'src/**/*.js'],
         dest: 'dist/<%= pkg.name %>.js'
