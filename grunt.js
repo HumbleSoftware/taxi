@@ -64,7 +64,7 @@ module.exports = function(grunt) {
   });
 
   // Default task.
-  grunt.registerTask('default', 'lint qunit concat min');
+  grunt.registerTask('default', 'server reload watch');
 
   grunt.loadNpmTasks('grunt-reload');
 };
