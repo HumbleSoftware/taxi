@@ -22,8 +22,16 @@ module.exports = function(grunt) {
         src: ['vendor/**/*.js'],
         dest: 'dist/vendor.js'
       },
+      src: {
+        src: ['src/**/*.js'],
+        dest: 'dist/src.js'
+      },
       dist: {
-        src: ['<banner:meta.banner>', 'src/**/*.js'],
+        src: [
+          '<banner:meta.banner>',
+          'dist/src.js',
+          'dist/templates.js'
+        ],
         dest: 'dist/<%= pkg.name %>.js'
       }
     },
@@ -34,8 +42,8 @@ module.exports = function(grunt) {
       }
     },
     watch: {
-      files: ['<config:lint.files>', 'index.html'],
-      tasks: 'lint qunit concat reload'
+      files: ['<config:lint.files>', 'index.html', 'templates/*'],
+      tasks: 'lint qunit handlebars concat reload'
     },
     jshint: {
       options: {
@@ -64,6 +72,16 @@ module.exports = function(grunt) {
         port: 8999,
         host: 'localhost'
       }
+    },
+    handlebars: {
+      compile: {
+        options: {
+          namespace: "Taxi.templates"
+        },
+        files: {
+          "dist/templates.js": "templates/**/*.hbs"
+        }
+      }
     }
   });
 
@@ -71,4 +89,5 @@ module.exports = function(grunt) {
   grunt.registerTask('default', 'server reload watch');
 
   grunt.loadNpmTasks('grunt-reload');
+  grunt.loadNpmTasks('grunt-contrib-handlebars');
 };
