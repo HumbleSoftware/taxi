@@ -1,26 +1,25 @@
 {
-  "name": "taxi",
-  "description": "The best project ever.",
-  "version": "0.1.0",
-  "homepage": "https://github.com/gruntjs/grunt-init-commonjs-sample",
+  "name": "grunt-skeleton",
+  "description": "grunt-skeleton is a simple grunt skeleton.",
+  "version": "1.0.0",
+  "homepage": "https://github.com/HumbleSoftware/grunt-skeleton",
   "author": {
-    "name": "\"Cowboy\" Ben Alman",
-    "url": "http://benalman.com/"
+    "name": "Carl Sutherland",
+    "url": "http://humblesoftware.com/"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/gruntjs/grunt-init-commonjs-sample.git"
+    "url": "git@github.com:HumbleSoftware/grunt-skeleton.git"
   },
   "bugs": {
-    "url": "https://github.com/gruntjs/grunt-init-commonjs-sample/issues"
+    "url": "https://github.com/HumbleSoftware/grunt-skeleton/issues"
   },
   "licenses": [
     {
       "type": "MIT",
-      "url": "https://github.com/gruntjs/grunt-init-commonjs-sample/blob/master/LICENSE-MIT"
+      "url": "https://github.com/HumbleSoftware/grunt-skeleton/blog/master/LICENSE"
     }
   ],
-  "main": "lib/grunt-init-commonjs-sample",
   "engines": {
     "node": "*"
   },
@@ -34,5 +33,5 @@
     "grunt-contrib-handlebars": "0.3.2",
     "grunt-contrib-less": "0.3.2"
   },
-  "keywords": []
+  "keywords": ["grunt"]
 }
