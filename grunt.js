@@ -140,6 +140,7 @@ module.exports = function(grunt) {
   // Default task.
   grunt.registerTask('default', 'server reload build watch');
   grunt.registerTask('build', 'lint qunit handlebars less concat');
+  grunt.registerTask('test', 'build mocha');
 
   grunt.loadNpmTasks('grunt-mocha');
   grunt.loadNpmTasks('grunt-reload');
