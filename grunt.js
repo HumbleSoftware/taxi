@@ -18,13 +18,34 @@ module.exports = function(grunt) {
       files: ['test/**/*.html']
     },
     concat: {
-      basic: {
+      vendor: {
         src: [
           'vendor/jquery*.js',
           'vendor/underscore*.js',
           'vendor/backbone*.js'
         ],
         dest: 'dist/vendor.js'
+      },
+      'vendor-test-js': {
+        src: [
+          'vendor/mocha*.js',
+          'vendor/chai*.js',
+          'vendor/sinon*.js',
+          'vendor/grunt-mocha-helper*.js'
+        ],
+        dest: 'dist/vendor-test.js'
+      },
+      'vendor-test-css': {
+        src: [
+          'vendor/mocha*.css'
+        ],
+        dest: 'dist/vendor-test.css'
+      },
+      test: {
+        src: [
+          'test/**/*.js'
+        ],
+        dest: 'dist/test.js'
       },
       src: {
         src: ['src/**/*.js'],
@@ -48,6 +69,7 @@ module.exports = function(grunt) {
     watch: {
       files: [
         'src/**/*',
+        'test/**/*',
         'index.html'
       ],
       tasks: 'build reload'
@@ -109,6 +131,9 @@ module.exports = function(grunt) {
           "dist/taxi.css": "src/styles/**/*.less"
         }
       }
+    },
+    mocha: {
+      index: ['test/index.html']
     }
   });
 
@@ -116,6 +141,7 @@ module.exports = function(grunt) {
   grunt.registerTask('default', 'server reload build watch');
   grunt.registerTask('build', 'lint qunit handlebars less concat');
 
+  grunt.loadNpmTasks('grunt-mocha');
   grunt.loadNpmTasks('grunt-reload');
   grunt.loadNpmTasks('grunt-contrib-handlebars');
   grunt.loadNpmTasks('grunt-contrib-less');
