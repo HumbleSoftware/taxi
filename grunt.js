@@ -113,7 +113,7 @@ module.exports = function(grunt) {
   });
 
   // Default task.
-  grunt.registerTask('default', 'server reload watch');
+  grunt.registerTask('default', 'server reload build watch');
   grunt.registerTask('build', 'lint qunit handlebars less concat');
 
   grunt.loadNpmTasks('grunt-reload');
