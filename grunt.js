@@ -47,12 +47,10 @@ module.exports = function(grunt) {
     },
     watch: {
       files: [
-        '<config:lint.files>',
-        'index.html',
-        'templates/**/*',
-        'styles/**/*'
+        'src/**/*',
+        'index.html'
       ],
-      tasks: 'lint qunit handlebars less concat reload'
+      tasks: 'build reload'
     },
     jshint: {
       options: {
@@ -88,7 +86,7 @@ module.exports = function(grunt) {
           namespace: "Taxi.templates"
         },
         files: {
-          "dist/templates.js": "templates/**/*.hbs"
+          "dist/templates.js": "src/templates/**/*.hbs"
         }
       }
     },
@@ -99,7 +97,7 @@ module.exports = function(grunt) {
           // paths: ["assets/css"]
         },
         files: {
-          "dist/taxi.css": "styles/**/*.less"
+          "dist/taxi.css": "src/styles/**/*.less"
         }
       },
       production: {
@@ -108,7 +106,7 @@ module.exports = function(grunt) {
           yuicompress: true
         },
         files: {
-          "dist/taxi.css": "styles/**/*.less"
+          "dist/taxi.css": "src/styles/**/*.less"
         }
       }
     }
@@ -116,6 +114,7 @@ module.exports = function(grunt) {
 
   // Default task.
   grunt.registerTask('default', 'server reload watch');
+  grunt.registerTask('build', 'lint qunit handlebars less concat');
 
   grunt.loadNpmTasks('grunt-reload');
   grunt.loadNpmTasks('grunt-contrib-handlebars');
