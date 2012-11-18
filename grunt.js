@@ -12,7 +12,9 @@ module.exports = function(grunt) {
         ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */'
     },
     lint: {
-      files: ['grunt.js', 'src/**/*.js', 'test/**/*.js']
+      grunt : ['grunt.js'],
+      src : ['src/**/*.js'],
+      test : ['test/**/*.js']
     },
     qunit: {
       files: ['test/**/*.html']
@@ -88,7 +90,15 @@ module.exports = function(grunt) {
         eqnull: true,
         browser: true
       },
-      globals: {}
+      globals: {},
+      test: {
+        globals: {
+          sinon: true,
+          expect: true,
+          describe: true,
+          it: true
+        }
+      }
     },
     uglify: {},
     server: {
