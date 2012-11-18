@@ -1,23 +1,23 @@
 {
-  "name": "grunt-skeleton",
-  "description": "grunt-skeleton is a simple grunt skeleton.",
+  "name": "taxi.js",
+  "description": "Taxi.js is a UI component driver.",
   "version": "1.0.0",
-  "homepage": "https://github.com/HumbleSoftware/grunt-skeleton",
+  "homepage": "https://github.com/HumbleSoftware/taxi.js",
   "author": {
     "name": "Carl Sutherland",
     "url": "http://humblesoftware.com/"
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:HumbleSoftware/grunt-skeleton.git"
+    "url": "git@github.com:HumbleSoftware/taxi.js.git"
   },
   "bugs": {
-    "url": "https://github.com/HumbleSoftware/grunt-skeleton/issues"
+    "url": "https://github.com/HumbleSoftware/taxi.js/issues"
   },
   "licenses": [
     {
       "type": "MIT",
-      "url": "https://github.com/HumbleSoftware/grunt-skeleton/blog/master/LICENSE"
+      "url": "https://github.com/HumbleSoftware/taxi.js/blog/master/LICENSE"
     }
   ],
   "engines": {
