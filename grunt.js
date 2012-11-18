@@ -115,7 +115,7 @@ module.exports = function(grunt) {
     handlebars: {
       compile: {
         options: {
-          namespace: "Taxi.templates"
+          namespace: ""
         },
         files: {
           "dist/templates.js": "src/templates/**/*.hbs"
@@ -129,7 +129,7 @@ module.exports = function(grunt) {
           // paths: ["assets/css"]
         },
         files: {
-          "dist/taxi.css": "src/styles/**/*.less"
+          "dist/app.css": "src/styles/**/*.less"
         }
       },
       production: {
@@ -138,7 +138,7 @@ module.exports = function(grunt) {
           yuicompress: true
         },
         files: {
-          "dist/taxi.css": "src/styles/**/*.less"
+          "dist/app.css": "src/styles/**/*.less"
         }
       }
     },
