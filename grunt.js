@@ -19,7 +19,11 @@ module.exports = function(grunt) {
     },
     concat: {
       basic: {
-        src: ['vendor/**/*.js'],
+        src: [
+          'vendor/jquery*.js',
+          'vendor/underscore*.js',
+          'vendor/backbone*.js'
+        ],
         dest: 'dist/vendor.js'
       },
       src: {
