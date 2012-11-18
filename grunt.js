@@ -3,6 +3,7 @@ module.exports = function(grunt) {
 
   // Project configuration.
   grunt.initConfig({
+    name: 'taxi',
     pkg: '<json:package.json>',
     meta: {
       banner: '/*! <%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
@@ -59,14 +60,13 @@ module.exports = function(grunt) {
           'dist/src.js',
           'dist/templates.js'
         ],
-        dest: 'dist/<%= pkg.name %>.js'
+        dest: 'dist/<%= name %>.js'
       }
     },
     min: {
       dist: {
         src: ['<banner:meta.banner>', '<config:concat.dist.dest>'],
-        dest: 'dist/<%= pkg.name %>.min.js'
-      }
+        dest: 'dist/<%= name %>.min.js' }
     },
     watch: {
       files: [
@@ -115,7 +115,7 @@ module.exports = function(grunt) {
     handlebars: {
       compile: {
         options: {
-          namespace: ""
+          namespace: "<%= name %>"
         },
         files: {
           "dist/templates.js": "src/templates/**/*.hbs"
@@ -129,7 +129,7 @@ module.exports = function(grunt) {
           // paths: ["assets/css"]
         },
         files: {
-          "dist/app.css": "src/styles/**/*.less"
+          "dist/<%= name %>.css": "src/styles/**/*.less"
         }
       },
       production: {
@@ -138,7 +138,7 @@ module.exports = function(grunt) {
           yuicompress: true
         },
         files: {
-          "dist/app.css": "src/styles/**/*.less"
+          "dist/<%= name %>.css": "src/styles/**/*.less"
         }
       }
     },
