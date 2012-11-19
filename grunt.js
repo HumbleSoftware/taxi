@@ -90,11 +90,7 @@ module.exports = function(grunt) {
         eqnull: true,
         browser: true
       },
-      globals: {
-        '_': true,
-        'Backbone': true,
-        '$': true
-      },
+      globals: {},
       test: {
         globals: {
           sinon: true,
@@ -119,6 +115,10 @@ module.exports = function(grunt) {
     handlebars: {
       compile: {
         options: {
+          processName: function (name) {
+            // strip src/templates/ and .hbs
+            return name.split('/').slice(2).join('/').slice(0, -4);
+          },
           namespace: "<%= name %>"
         },
         files: {
