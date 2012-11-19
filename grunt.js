@@ -25,7 +25,8 @@ module.exports = function(grunt) {
         src: [
           'vendor/jquery*.js',
           'vendor/underscore*.js',
-          'vendor/backbone*.js'
+          'vendor/backbone*.js',
+          'vendor/handlebars.runtime*.js'
         ],
         dest: 'dist/vendor.js'
       },
