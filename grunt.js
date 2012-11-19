@@ -116,6 +116,7 @@ module.exports = function(grunt) {
     handlebars: {
       compile: {
         options: {
+          wrapped: true,
           processName: function (name) {
             // strip src/templates/ and .hbs
             return name.split('/').slice(2).join('/').slice(0, -4);
