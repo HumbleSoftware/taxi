@@ -126,7 +126,7 @@ module.exports = function(grunt) {
             // strip src/templates/ and .hbs
             return name.split('/').slice(2).join('/').slice(0, -4);
           },
-          namespace: "<%= name %>"
+          namespace: "<%= name %>.templates"
         },
         files: {
           "dist/templates.js": "src/templates/**/*.hbs"
