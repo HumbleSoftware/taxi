@@ -90,7 +90,12 @@ module.exports = function(grunt) {
         eqnull: true,
         browser: true
       },
-      globals: {},
+      globals: {
+        '_': true,
+        'Backbone': true,
+        '$': true,
+        'taxi': true
+      },
       test: {
         globals: {
           sinon: true,
