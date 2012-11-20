@@ -1,0 +1,50 @@
+.taxi {
+
+  @headerHeight: 36px;
+  @headerPadding: 8px;
+
+  .taxi-driver-list ul,
+  .taxi-driver-runners {
+    list-style: none;
+    margin: 0px;
+    padding: 0px;
+  }
+
+  .taxi-header {
+    font-family: sans-serif;
+    background: #aaa;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    left: 0px;
+    height: @headerHeight;
+    text-align: center;
+    .taxi-menu {
+      position: absolute;
+      top: 0px;
+      right: @headerPadding;
+    }
+    h1 {
+      margin: 0px;
+      position: absolute;
+      top: 0px;
+      left : @headerPadding;
+    }
+  }
+  .taxi-view {
+    position: absolute;
+    top: @headerHeight;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+  }
+  .taxi-driver {
+    padding: 0px 24px;
+    .taxi-runner {
+      margin-bottom: 16px;
+    }
+    .taxi-runner-container {
+      position: relative;
+    }
+  }
+}
