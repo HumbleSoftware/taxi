@@ -51,5 +51,15 @@ taxi.DriverView = Backbone.View.extend({
   },
   getRenderData : function () {
     return this.model.toJSON();
+  },
+  scroll : function (key) {
+    var
+      selector = '[data-key="' + key + '"]',
+      $runner = this.$runners.children().filter(selector),
+      position = $runner.position();
+    if (position) {
+      console.log(position.top);
+      this.$el.scrollTop(position.top);
+    }
   }
 });
