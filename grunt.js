@@ -92,17 +92,21 @@ module.exports = function(grunt) {
         browser: true
       },
       globals: {
+        'console': true,
         '_': true,
         'Backbone': true,
         '$': true,
         'taxi': true
       },
       test: {
+        options : {
+          expr: true
+        },
         globals: {
+          console: true,
+          taxi: true,
           sinon: true,
-          expect: true,
-          describe: true,
-          it: true
+          expect: true
         }
       }
     },
