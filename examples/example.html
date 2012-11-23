@@ -1,0 +1,73 @@
+  <html>
+  <head>
+    <link rel="stylesheet" href="../dist/taxi.css" />
+    <script type="text/javascript" src="../dist/vendor.js"></script>
+    <script type="text/javascript" src="../dist/taxi.js"></script>
+    <script type="text/javascript" src="example.js"></script>
+  </head>
+  <body>
+    <div id="taxi"></div>
+    <script>
+      var
+        config = {
+          drivers : [
+            {
+              key : 'comp-one',
+              name : 'Component One',
+              beforeEach : function () {
+              },
+              afterEach : function () {
+              },
+              passengers : [
+                {
+                  key : 'case-one',
+                  name : 'One Default',
+                  callback : function (options) {
+                    var
+                      $container = options.$container;
+                    $container.html('hello world');
+                  }
+                },
+                {
+                  key : 'case-two',
+                  name : 'One Special',
+                  callback : function (options) {
+                    var
+                      $container = options.$container;
+                    $container.html('hello world <br /> Longer Content');
+                  }
+                }
+              ]
+            },
+            {
+              key : 'comp-two',
+              name : 'Component Two',
+              beforeEach : function (options) {
+                console.log('before each');
+                options.$container.append('<p>some common html</p>');
+              },
+              afterEach : function () {
+                console.log('after each');
+              },
+              passengers : [
+                {
+                  key : 'case-one',
+                  name : 'Default Content'
+                },
+                {
+                  key : 'case-two',
+                  name : 'Special Content',
+                  callback : function (options) {
+                    options.$container.append('<p>extra special content</p>');
+                  }
+                }
+              ]
+            }
+          ]
+        };
+      $(function () {
+        taxi($('#taxi'), config);
+      });
+    </script>
+  </body>
+</html>
