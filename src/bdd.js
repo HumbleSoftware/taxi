@@ -7,41 +7,17 @@ taxi.bdd = function bdd () {
       'beforeEach',
       'afterEach'
     ],
-    drivers = [],
-    pointer = null,
+    drivers,
+    config,
+    driverContext;
+
+  function initialize () {
+    drivers = [];
+    driverContext = null;
+    passengerContext = null;
     config = {
       drivers : drivers
-    },
-    object;
-
-  // Methods:
-  function driver (name, callback) {
-    if (pointer) {
-      throw new Error('already driving');
-    }
-    validate(name, callback, 'driver');
-    return addDriver(name, callback);
-  }
-  function passenger (name, callback) {
-    if (!pointer) {
-      throw new Error('no driver');
-    }
-    validate(name, callback, 'passenger');
-    return addPassenger(name, callback);
-  }
-  function beforeEach (callback) {
-  }
-  function afterEach (callback) {
-  }
-  function data () {
-    return config;
-  }
-  function inject (context) {
-    if (_.isObject(context)) {
-      _.each(helpers, function (helper) {
-        context[helper] = this[helper];
-      }, this);
-    }
+    };
   }
 
   // Helpers:
@@ -52,9 +28,9 @@ taxi.bdd = function bdd () {
         name : name,
         passengers : []
       };
-    pointer = driver;
+    driverContext = driver;
     callback.call(this);
-    pointer = null;
+    driverContext = null;
     drivers.push(driver);
     return driver;
   }
@@ -65,7 +41,8 @@ taxi.bdd = function bdd () {
         name : name,
         callback : callback
       };
-    pointer.passengers.push(passenger);
+    passenger = passenger;
+    driverContext.passengers.push(passenger);
     return passenger;
   }
   function validate (name, callback, type) {
@@ -99,23 +76,42 @@ taxi.bdd = function bdd () {
     return uniqueKey(drivers, nameToKey(name));
   }
   function passengerKey (name) {
-    return uniqueKey(pointer.passengers, nameToKey(name));
+    return uniqueKey(driverContext.passengers, nameToKey(name));
   }
 
-  // Class
-  object = {
-    data : data,
-    driver : driver,
-    passenger : passenger,
-    beforeEach : beforeEach,
-    afterEach : afterEach,
-    inject : inject
+  // Class:
+  initialize();
+  return {
+    driver : function (name, callback) {
+      if (driverContext) {
+        throw new Error('already driving');
+      }
+      validate(name, callback, 'driver');
+      return addDriver(name, callback);
+    },
+    passenger : function (name, callback) {
+      if (!driverContext) {
+        throw new Error('no driver');
+      }
+      validate(name, callback, 'passenger');
+      return addPassenger(name, callback);
+    },
+    beforeEach : function (callback) {
+    },
+    afterEach : function (callback) {
+    },
+    data : function data () {
+      return config;
+    },
+    inject : function (context) {
+      if (_.isObject(context)) {
+        _.each(helpers, function (helper) {
+          context[helper] = this[helper];
+        }, this);
+      }
+    },
+   reset : function () {
+     initialize();
+   }
   };
-
-  // Bind helpers to this instance.
-  _.each(helpers, function (helper) {
-    _.bindAll(object, helper);
-  });
-
-  return object;
 };

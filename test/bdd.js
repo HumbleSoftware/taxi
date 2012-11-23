@@ -207,4 +207,35 @@ describe('bdd', function () {
       this.bdd.inject();
     });
   });
+
+  // reset()
+  describe('reset()', function () {
+    it('resets', function () {
+      var
+        bdd = this.bdd,
+        data;
+      bdd.driver('test', function () {
+        bdd.passenger('a', function () {
+        });
+      });
+      bdd.reset();
+      data = bdd.data();
+      expect(data).to.be.ok;
+      expect(data.drivers.length).to.equal(0);
+    });
+    it('resets driver context', function () {
+      var
+        bdd = this.bdd;
+      function test () {
+        bdd.driver('test', function () {
+          bdd.passenger('a', function () {
+          });
+          bdd.reset();
+          bdd.passenger('b', function () {
+          });
+        });
+      }
+      expect(test).to.throws('no driver');
+    });
+  });
 });
