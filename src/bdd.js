@@ -52,6 +52,20 @@ taxi.bdd = function bdd () {
       throw new Error('invalid ' + type + ' callback');
     }
   }
+  function addEach (callback, type) {
+    var
+      object = driverContext || config;
+    if (object[type]) {
+      object[type] = _.compose(callback, object[type]);
+    } else {
+      object[type] = callback;
+    }
+  }
+  function validateEach (callback, type) {
+    if (!_.isFunction(callback)) {
+      throw 'invalid ' + type + ' callback';
+    }
+  }
 
   // Keys:
   function nameToKey (name) {
@@ -96,8 +110,12 @@ taxi.bdd = function bdd () {
       return addPassenger(name, callback);
     },
     beforeEach : function (callback) {
+      validateEach(callback, 'beforeEach');
+      addEach(callback, 'beforeEach');
     },
     afterEach : function (callback) {
+      validateEach(callback, 'afterEach');
+      addEach(callback, 'afterEach');
     },
     data : function data () {
       return config;

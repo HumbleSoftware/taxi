@@ -137,30 +137,12 @@ describe('bdd', function () {
 
   // beforeEach()
   describe('beforeEach()', function () {
-    it('adds a before callback', function () {
-      this.bdd.beforeEach(function () {});
-    });
-    it('adds a before callback in driver', function () {
-      var
-        bdd = this.bdd;
-      bdd.driver('test', function () {
-        bdd.beforeEach(function () {});
-      });
-    });
+    eachHelper('beforeEach');
   });
 
   // afterEach()
   describe('afterEach()', function () {
-    it('adds an after callback', function () {
-      this.bdd.afterEach(function () {});
-    });
-    it('adds a after callback in driver', function () {
-      var
-        bdd = this.bdd;
-      bdd.driver('test', function () {
-        bdd.afterEach(function () {});
-      });
-    });
+    eachHelper('afterEach');
   });
 
   // data()
@@ -193,6 +175,8 @@ describe('bdd', function () {
       expect(driver.passengers[0]).to.equal(a);
       expect(driver.passengers[1]).to.equal(b);
     });
+    dataEachHelper('beforeEach');
+    dataEachHelper('afterEach');
   });
 
   // inject()
@@ -210,7 +194,7 @@ describe('bdd', function () {
 
   // reset()
   describe('reset()', function () {
-    it('resets', function () {
+    it('resets internal state', function () {
       var
         bdd = this.bdd,
         data;
@@ -238,4 +222,55 @@ describe('bdd', function () {
       expect(test).to.throws('no driver');
     });
   });
+
+  function dataEachHelper (type) {
+    it('adds ' + type + ' to data', function () {
+      var
+        a = function () {};
+      this.bdd[type](a);
+      expect(this.bdd.data()[type]).to.equal(a);
+    });
+    it('adds ' + type + ' to driver data', function () {
+      var
+        bdd = this.bdd,
+        a = function () {};
+      bdd.driver('test', function () {
+        bdd[type](a);
+      });
+      expect(bdd.data().drivers[0][type]).to.equal(a);
+    });
+    it('composes multiple ' + type + ' callbacks', function () {
+      var
+        a = sinon.spy(),
+        b = sinon.spy();
+      this.bdd[type](a);
+      this.bdd[type](b);
+      expect(a).to.have.not.called;
+      this.bdd.data()[type]();
+      expect(a).to.have.been.called;
+      expect(b).to.have.been.called;
+      expect(a).to.have.been.calledBefore(b);
+    });
+  }
+
+  function eachHelper (type) {
+    it('adds a ' + type + ' callback', function () {
+      this.bdd[type](function () {});
+    });
+    it('adds a ' + type + ' callback in driver', function () {
+      var
+        bdd = this.bdd;
+      bdd.driver('test', function () {
+        bdd[type](function () {});
+      });
+    });
+    it('throws an error for invalid callback', function () {
+      var
+        bdd = this.bdd;
+      function test () {
+        bdd.beforeEach('thing');
+      }
+      expect(test).to.throws('invalid ' + type + ' callback');
+    });
+  }
 });
