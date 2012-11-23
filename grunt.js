@@ -12,6 +12,8 @@ module.exports = function(grunt) {
         '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
         ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */'
     },
+    header : ';(function () {',
+    footer : 'taxi.version = "<%= pkg.version %>";\n})();',
     lint: {
       grunt : ['grunt.js'],
       src : ['src/**/*.js'],
@@ -62,8 +64,10 @@ module.exports = function(grunt) {
       dist: {
         src: [
           '<banner:meta.banner>',
+          '<banner:header>',
           'dist/src.js',
-          'dist/templates.js'
+          'dist/templates.js',
+          '<banner:footer>'
         ],
         dest: 'dist/<%= name %>.js'
       }
