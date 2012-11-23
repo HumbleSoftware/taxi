@@ -8,7 +8,7 @@ describe('bdd', function () {
     ];
 
   beforeEach(function () {
-    this.bdd = taxi.bdd();
+    this.bdd = taxi.lib.bdd();
   });
 
   it('instantiates', function () {});

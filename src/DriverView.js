@@ -3,12 +3,14 @@ taxi.DriverView = Backbone.View.extend({
   contexts : {},
   destroy : function () {
     var
-      runners = this.model.get('runners'),
+      runners = this.model.get('passengers'),
       afterEach = this.model.get('afterEach'),
       contexts = this.contexts;
-    _.each(runners, function (runner) {
-      afterEach.call(contexts[runner.key]);
-    });
+    if (afterEach) {
+      _.each(runners, function (runner) {
+        afterEach.call(contexts[runner.key]);
+      });
+    }
   },
   render : function () {
     var
@@ -23,7 +25,7 @@ taxi.DriverView = Backbone.View.extend({
     var
       key = this.model.get('key'),
       $runners = this.$runners,
-      runners = this.model.get('runners'),
+      runners = this.model.get('passengers'),
       beforeEach = this.model.get('beforeEach'),
       contexts = this.contexts;
     _.each(runners, function (runner) {

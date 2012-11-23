@@ -1,4 +1,5 @@
-taxi.bdd = function bdd () {
+taxi['lib'] = taxi['lib'] || {};
+taxi.lib.bdd = function bdd () {
 
   var
     helpers = [
@@ -132,3 +133,4 @@ taxi.bdd = function bdd () {
    }
   };
 };
+taxi.bdd = taxi.lib.bdd();

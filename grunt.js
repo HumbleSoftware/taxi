@@ -52,7 +52,10 @@ module.exports = function(grunt) {
         dest: 'dist/test.js'
       },
       src: {
-        src: ['src/**/*.js'],
+        src: [
+          'src/taxi.js',
+          'src/**/*.js'
+        ],
         dest: 'dist/src.js'
       },
       dist: {

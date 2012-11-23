@@ -1,10 +1,9 @@
-taxi = function (el, config) {
-
+taxi = function (el, myConfig) {
   var
-    drivers = new taxi.DriverCollection(config),
     view = new taxi.TaxiView(),
+    config = new taxi.ConfigModel(myConfig || taxi.bdd.data()),
     router = new taxi.TaxiRouter({
-      drivers : drivers,
+      config : config,
       application : view
     });
 
