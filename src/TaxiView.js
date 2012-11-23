@@ -6,6 +6,7 @@ taxi.TaxiView = Backbone.View.extend({
       $el = this.$el;
     $el.html(taxi.templates.taxi());
     this.$content = $el.find('.taxi-view');
+    this.$title = $el.find('.taxi-title');
     return this;
   },
   setView : function (view) {
@@ -16,5 +17,8 @@ taxi.TaxiView = Backbone.View.extend({
       this.view = view;
       this.$content.html(view.render().$el);
     }
+  },
+  setTitle : function (title) {
+    this.$title.text(title);
   }
 });

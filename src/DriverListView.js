@@ -1,4 +1,5 @@
 taxi.DriverListView = Backbone.View.extend({
+  className : 'taxi-driver-list',
   render : function () {
     var
       data = this.getRenderData(),

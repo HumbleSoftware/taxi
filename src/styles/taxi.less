@@ -1,6 +1,6 @@
 .taxi {
 
-  @headerHeight: 36px;
+  @headerHeight: 40px;
   @headerPadding: 8px;
 
   .taxi-driver-list ul,
@@ -10,21 +10,33 @@
     padding: 0px;
   }
 
-  .taxi-header {
+  .taxi-header,
+  .taxi-driver-list,
+  .taxi-runner-name {
     font-family: sans-serif;
-    background: #aaa;
+    a,
+    a:visited,
+    a:active {
+      color: #333;
+    }
+  }
+
+  .taxi-header {
+    background: #eee;
+    border-bottom: 1px solid #888;
     position: absolute;
     top: 0px;
     right: 0px;
     left: 0px;
     height: @headerHeight;
+    line-height: @headerHeight;
     text-align: center;
     .taxi-menu {
       position: absolute;
-      top: 0px;
       right: @headerPadding;
     }
     h1 {
+      font-weight: normal;
       margin: 0px;
       position: absolute;
       top: 0px;
@@ -32,6 +44,7 @@
     }
   }
   .taxi-view {
+    padding: 24px;
     position: absolute;
     top: @headerHeight;
     left: 0px;
@@ -39,7 +52,6 @@
     bottom: 0px;
   }
   .taxi-driver {
-    padding: 0px 24px;
     .taxi-runner {
       margin-bottom: 16px;
     }
