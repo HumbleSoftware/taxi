@@ -1,5 +1,7 @@
 .taxi {
 
+  @border: 1px solid #888;
+  @background: #eee;
   @headerHeight: 40px;
   @headerPadding: 8px;
 
@@ -22,19 +24,39 @@
   }
 
   .taxi-header {
-    background: #eee;
-    border-bottom: 1px solid #888;
+    background: @background;
+    border-bottom: @border;
     position: absolute;
     top: 0px;
     right: 0px;
     left: 0px;
+    z-index: 10;
     height: @headerHeight;
     line-height: @headerHeight;
-    text-align: center;
     .taxi-menu {
+      width: 100px;
+      text-align: right;
       position: absolute;
       right: @headerPadding;
+      .taxi-driver-list {
+        background: @background;
+        position: absolute;
+        top: @headerHeight;
+        display: none;
+        border: @border;
+        border-top: 0px;
+        right: 0px;
+        z-index: 10;
+        padding: 4px 8px;
+        white-space: nowrap;
+        line-height: 20px;
+        font-size: 14px;
+      }
+      &:hover .taxi-driver-list {
+        display: block;
+      }
     }
+
     h1 {
       font-size: 24px;
       font-weight: normal;

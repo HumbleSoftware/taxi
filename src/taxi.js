@@ -1,7 +1,9 @@
 taxi = function (el, myConfig) {
   var
-    view = new taxi.TaxiView(),
     config = new taxi.ConfigModel(myConfig || taxi.bdd.data()),
+    view = new taxi.TaxiView({
+      config : config
+    }),
     router = new taxi.TaxiRouter({
       config : config,
       application : view
