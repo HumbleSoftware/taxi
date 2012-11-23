@@ -15,6 +15,7 @@ taxi.TaxiRouter = Backbone.Router.extend({
         collection : this.drivers
       });
     this.application.setView(view);
+    this.application.setTitle();
   },
   driver : function (driver, runner) {
     var

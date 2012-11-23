@@ -19,6 +19,6 @@ taxi.TaxiView = Backbone.View.extend({
     }
   },
   setTitle : function (title) {
-    this.$title.text(title);
+    this.$title.text(title || 'A UI component driver.');
   }
 });
