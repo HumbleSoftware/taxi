@@ -14,7 +14,6 @@ taxi.bdd = function bdd () {
   function initialize () {
     drivers = [];
     driverContext = null;
-    passengerContext = null;
     config = {
       drivers : drivers
     };
