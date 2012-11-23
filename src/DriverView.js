@@ -58,7 +58,6 @@ taxi.DriverView = Backbone.View.extend({
       $runner = this.$runners.children().filter(selector),
       position = $runner.position();
     if (position) {
-      console.log(position.top);
       this.$el.scrollTop(position.top);
     }
   }
