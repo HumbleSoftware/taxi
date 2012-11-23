@@ -54,6 +54,7 @@ module.exports = function(grunt) {
       src: {
         src: [
           'src/taxi.js',
+          'src/DriverModel.js',
           'src/**/*.js'
         ],
         dest: 'dist/src.js'
