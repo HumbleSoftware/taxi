@@ -307,23 +307,21 @@ taxi.DriverView = Backbone.View.extend({
         options = {
           $container : $container
         };
-      if (beforeEach) {
-        try {
+
+      try {
+        if (beforeEach) {
           beforeEach.call(context, options);
-        } catch (e) {
-          console.error(e);
         }
-      }
-      if (runner.callback) {
-        try {
+        if (runner.callback) {
           runner.callback.call(context, options);
-        } catch (e) {
-          $container
-            .addClass('taxi-error')
-            .text(e.stack || e.toString());
-          console.error(e);
         }
+      } catch (e) {
+        $container
+          .addClass('taxi-error')
+          .text(e.stack || e.toString());
+        console.error(e);
       }
+
       $runners.append($html);
       contexts[runner.key] = context;
     });
