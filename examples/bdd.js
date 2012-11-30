@@ -19,3 +19,16 @@ driver('Component Two', function () {
     options.$container.append('<p>extra special content</p>');
   });
 });
+driver('Error Component', function () {
+  passenger('native error', function () {
+    var
+      object = {};
+    object.test();
+  });
+  passenger('custom error', function () {
+    throw new Error('error');
+  });
+  passenger('no error', function (options) {
+    options.$container.text('no error!');
+  });
+});

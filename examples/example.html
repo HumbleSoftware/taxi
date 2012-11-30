@@ -62,6 +62,35 @@
                   }
                 }
               ]
+            },
+            {
+              key : 'comp-three',
+              name : 'Error Component',
+              passengers : [
+                {
+                  key : 'case-one',
+                  name : 'native error',
+                  callback : function () {
+                    var
+                      object = {};
+                    object.test();
+                  }
+                },
+                {
+                  key : 'case-two',
+                  name : 'custom error',
+                  callback : function () {
+                    throw new Error('error');
+                  }
+                },
+                {
+                  key : 'case-three',
+                  name : 'no error',
+                  callback : function (options) {
+                    options.$container.text('no error!');
+                  }
+                }
+              ]
             }
           ]
         };
