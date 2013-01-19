@@ -1,6 +1,6 @@
-/*! taxi.js - v1.0.0 - 2012-11-30
+/*! taxi.js - v1.0.0 - 2013-01-19
 * https://github.com/HumbleSoftware/taxi.js
-* Copyright (c) 2012 Carl Sutherland; Licensed MIT */
+* Copyright (c) 2013 Carl Sutherland; Licensed MIT */
 
 ;(function () {
 
@@ -32,9 +32,169 @@ taxi.DriverModel = Backbone.Model.extend({
   }
 });
 
-taxi.ConfigModel = Backbone.Model.extend({
+taxi.DriverView = Backbone.View.extend({
+  className : 'taxi-driver',
+  contexts : {},
   initialize : function (options) {
-    this.drivers = new taxi.DriverCollection(options.drivers);
+    this.runner = options.runner;
+  },
+  destroy : function () {
+    var
+      runners = this.model.get('passengers'),
+      afterEach = this.model.get('afterEach'),
+      contexts = this.contexts;
+    if (afterEach) {
+      _.each(runners, function (runner) {
+        try {
+          afterEach.call(contexts[runner.key]);
+        } catch (e) {
+          console.error(e);
+        }
+      });
+    }
+  },
+  render : function () {
+    var
+      data = this.getRenderData(),
+      html = taxi.templates.driver(data);
+    this.$el.html(html);
+    this.$runners = this.$el.find('.taxi-driver-runners');
+    this.renderRunners();
+    return this;
+  },
+  renderRunners : function () {
+    var
+      runner = this.runner,
+      runners = this.model.get('passengers');
+    if (runner) {
+      this.renderRunner(_.find(runners, function (config) {
+        return config.key === runner;
+      }));
+    } else {
+      _.each(runners, this.renderRunner, this);
+    }
+  },
+  renderRunner : function (runner) {
+    var
+      key = this.model.get('key'),
+      $runners = this.$runners,
+      beforeEach = this.model.get('beforeEach'),
+      contexts = this.contexts,
+      context = {},
+      $html = $(taxi.templates.runner({
+        'runner' : runner,
+        'driver_key' : key
+      })),
+      $container = $html.find('.taxi-runner-container'),
+      options = {
+        $container : $container
+      };
+
+    try {
+      if (beforeEach) {
+        beforeEach.call(context, options);
+      }
+      if (runner.callback) {
+        runner.callback.call(context, options);
+      }
+    } catch (e) {
+      $container
+        .addClass('taxi-error')
+        .text(e.stack || e.toString());
+      console.error(e);
+    }
+
+    $runners.append($html);
+    contexts[runner.key] = context;
+  },
+  getRenderData : function () {
+    return this.model.toJSON();
+  },
+  scroll : function (key) {
+    var
+      selector = '[data-key="' + key + '"]',
+      $runner = this.$runners.children().filter(selector),
+      position = $runner.position();
+    if (position) {
+      this.$el.scrollTop(position.top);
+    }
+  }
+});
+
+taxi.DriverCollection = Backbone.Collection.extend({
+  model : taxi.DriverModel
+});
+
+taxi.TaxiView = Backbone.View.extend({
+  className : 'taxi',
+  view : null,
+  initialize : function (options) {
+    this.config = options.config;
+    this.menu = new taxi.DriverListView({
+      collection : this.config.drivers
+    });
+  },
+  destroy : function () {
+    this.menu.destroy();
+  },
+  render : function () {
+    var
+      menu = this.menu,
+      $el = this.$el;
+    menu.render();
+    this.$el.html(taxi.templates.taxi());
+    this.$content = $el.find('.taxi-view');
+    this.$title = $el.find('.taxi-title');
+    this.$menu = menu.$el;
+    $el.find('.taxi-menu').append(menu.$el);
+    return this;
+  },
+  setView : function (view) {
+    if (this.view && this.view.destroy) {
+      this.view.destroy();
+    }
+    if (view) {
+      this.view = view;
+      this.$content.html(view.render().$el);
+    }
+  },
+  setTitle : function (title) {
+    this.$title.html(title || 'A UI component driver.');
+  }
+});
+
+taxi.TaxiRouter = Backbone.Router.extend({
+  routes : {
+    '' : 'home',
+    'driver/:driver' : 'driver',
+    'driver/:driver/:runner' : 'driver',
+    'single/:driver/:runner' : 'driver'
+  },
+  initialize : function (options) {
+    this.config = options.config;
+    this.drivers = this.config.drivers;
+    this.application = options.application;
+  },
+  home : function () {
+    var
+      view = new taxi.DriverListView({
+        collection : this.drivers
+      });
+    this.application.setView(view);
+    this.application.setTitle();
+  },
+  driver : function (driver, runner) {
+    var
+      model = this.drivers.get(driver),
+      view = new taxi.DriverView({
+        model : model,
+        runner : runner
+      });
+    this.application.setView(view);
+    this.application.setTitle(
+      '<a href="#driver/'+model.get('key')+'">'+model.get('name')+' Driver</a>'
+    );
+    //view.scroll(runner);
   }
 });
 
@@ -175,79 +335,6 @@ taxi.lib.bdd = function bdd () {
 };
 taxi.bdd = taxi.lib.bdd();
 
-taxi.TaxiView = Backbone.View.extend({
-  className : 'taxi',
-  view : null,
-  initialize : function (options) {
-    this.config = options.config;
-    this.menu = new taxi.DriverListView({
-      collection : this.config.drivers
-    });
-  },
-  destroy : function () {
-    this.menu.destroy();
-  },
-  render : function () {
-    var
-      menu = this.menu,
-      $el = this.$el;
-    menu.render();
-    this.$el.html(taxi.templates.taxi());
-    this.$content = $el.find('.taxi-view');
-    this.$title = $el.find('.taxi-title');
-    this.$menu = menu.$el;
-    $el.find('.taxi-menu').append(menu.$el);
-    return this;
-  },
-  setView : function (view) {
-    if (this.view && this.view.destroy) {
-      this.view.destroy();
-    }
-    if (view) {
-      this.view = view;
-      this.$content.html(view.render().$el);
-    }
-  },
-  setTitle : function (title) {
-    this.$title.text(title || 'A UI component driver.');
-  }
-});
-
-taxi.TaxiRouter = Backbone.Router.extend({
-  routes : {
-    '' : 'home',
-    'driver/:driver' : 'driver',
-    'driver/:driver/:runner' : 'driver'
-  },
-  initialize : function (options) {
-    this.config = options.config;
-    this.drivers = this.config.drivers;
-    this.application = options.application;
-  },
-  home : function () {
-    var
-      view = new taxi.DriverListView({
-        collection : this.drivers
-      });
-    this.application.setView(view);
-    this.application.setTitle();
-  },
-  driver : function (driver, runner) {
-    var
-      model = this.drivers.get(driver),
-      view = new taxi.DriverView({
-        model : model
-      });
-    this.application.setView(view);
-    this.application.setTitle(model.get('name') + ' Driver');
-    view.scroll(runner);
-  }
-});
-
-taxi.DriverCollection = Backbone.Collection.extend({
-  model : taxi.DriverModel
-});
-
 taxi.DriverListView = Backbone.View.extend({
   className : 'taxi-driver-list',
   render : function () {
@@ -262,127 +349,17 @@ taxi.DriverListView = Backbone.View.extend({
   }
 });
 
-taxi.DriverView = Backbone.View.extend({
-  className : 'taxi-driver',
-  contexts : {},
-  destroy : function () {
-    var
-      runners = this.model.get('passengers'),
-      afterEach = this.model.get('afterEach'),
-      contexts = this.contexts;
-    if (afterEach) {
-      _.each(runners, function (runner) {
-        try {
-          afterEach.call(contexts[runner.key]);
-        } catch (e) {
-          console.error(e);
-        }
-      });
-    }
-  },
-  render : function () {
-    var
-      data = this.getRenderData(),
-      html = taxi.templates.driver(data);
-    this.$el.html(html);
-    this.$runners = this.$el.find('.taxi-driver-runners');
-    this.renderRunners();
-    return this;
-  },
-  renderRunners : function () {
-    var
-      key = this.model.get('key'),
-      $runners = this.$runners,
-      runners = this.model.get('passengers'),
-      beforeEach = this.model.get('beforeEach'),
-      contexts = this.contexts;
-    _.each(runners, function (runner) {
-      var
-        context = {},
-        $html = $(taxi.templates.runner({
-          'runner' : runner,
-          'driver_key' : key
-        })),
-        $container = $html.find('.taxi-runner-container'),
-        options = {
-          $container : $container
-        };
-
-      try {
-        if (beforeEach) {
-          beforeEach.call(context, options);
-        }
-        if (runner.callback) {
-          runner.callback.call(context, options);
-        }
-      } catch (e) {
-        $container
-          .addClass('taxi-error')
-          .text(e.stack || e.toString());
-        console.error(e);
-      }
-
-      $runners.append($html);
-      contexts[runner.key] = context;
-    });
-  },
-  getRenderData : function () {
-    return this.model.toJSON();
-  },
-  scroll : function (key) {
-    var
-      selector = '[data-key="' + key + '"]',
-      $runner = this.$runners.children().filter(selector),
-      position = $runner.position();
-    if (position) {
-      this.$el.scrollTop(position.top);
-    }
+taxi.ConfigModel = Backbone.Model.extend({
+  initialize : function (options) {
+    this.drivers = new taxi.DriverCollection(options.drivers);
   }
 });
 
 this["taxi"] = this["taxi"] || {};
 this["taxi"]["templates"] = this["taxi"]["templates"] || {};
 
-this["taxi"]["templates"]["taxi"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
-  helpers = helpers || Handlebars.helpers;
-  
-
-
-  return "<div class=\"taxi-header\">\n  <h1>Taxi.js - <span class=\"taxi-title\"></span></h1>\n  <div class=\"taxi-menu\">\n    <a href=\"#\">menu</a>\n  </div>\n</div>\n<div class=\"taxi-view\"></div>\n";});
-
-this["taxi"]["templates"]["driver"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
-  helpers = helpers || Handlebars.helpers;
-  
-
-
-  return "<ul class=\"taxi-driver-runners\"></ul>\n";});
-
-this["taxi"]["templates"]["runner"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
-  helpers = helpers || Handlebars.helpers;
-  var buffer = "", stack1, foundHelper, functionType="function", escapeExpression=this.escapeExpression;
-
-
-  buffer += "<li class=\"taxi-runner\" data-key=\"";
-  stack1 = depth0.runner;
-  stack1 = stack1 == null || stack1 === false ? stack1 : stack1.key;
-  stack1 = typeof stack1 === functionType ? stack1() : stack1;
-  buffer += escapeExpression(stack1) + "\">\n  <div class=\"taxi-runner-name\">\n    <a href=\"#driver/";
-  foundHelper = helpers.driver_key;
-  if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{}}); }
-  else { stack1 = depth0.driver_key; stack1 = typeof stack1 === functionType ? stack1() : stack1; }
-  buffer += escapeExpression(stack1) + "/";
-  stack1 = depth0.runner;
-  stack1 = stack1 == null || stack1 === false ? stack1 : stack1.key;
-  stack1 = typeof stack1 === functionType ? stack1() : stack1;
-  buffer += escapeExpression(stack1) + "\">";
-  stack1 = depth0.runner;
-  stack1 = stack1 == null || stack1 === false ? stack1 : stack1.name;
-  stack1 = typeof stack1 === functionType ? stack1() : stack1;
-  buffer += escapeExpression(stack1) + "</a>\n  </div>\n  <div class=\"taxi-runner-container\"></div>\n</li>\n";
-  return buffer;});
-
 this["taxi"]["templates"]["driver_list"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
-  helpers = helpers || Handlebars.helpers;
+  helpers = helpers || Handlebars.helpers; data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
@@ -390,19 +367,58 @@ function program1(depth0,data) {
   var buffer = "", stack1, foundHelper;
   buffer += "\n  <li><a href=\"#driver/";
   foundHelper = helpers.key;
-  if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{}}); }
-  else { stack1 = depth0.key; stack1 = typeof stack1 === functionType ? stack1() : stack1; }
+  if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.key; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1) + "\">";
   foundHelper = helpers.name;
-  if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{}}); }
-  else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1() : stack1; }
+  if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1) + "</a></li>\n  ";
   return buffer;}
 
   buffer += "<ul>\n  ";
-  stack1 = helpers.each.call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(1, program1, data)});
+  stack1 = {};
+  stack1 = helpers.each.call(depth0, depth0, {hash:stack1,inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n</ul>\n";
   return buffer;});
+
+this["taxi"]["templates"]["runner"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  helpers = helpers || Handlebars.helpers; data = data || {};
+  var buffer = "", stack1, foundHelper, functionType="function", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<li class=\"taxi-runner\" data-key=\"";
+  stack1 = depth0.runner;
+  stack1 = stack1 == null || stack1 === false ? stack1 : stack1.key;
+  stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1;
+  buffer += escapeExpression(stack1) + "\">\n  <div class=\"taxi-runner-name\">\n    <a href=\"#driver/";
+  foundHelper = helpers.driver_key;
+  if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.driver_key; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1) + "/";
+  stack1 = depth0.runner;
+  stack1 = stack1 == null || stack1 === false ? stack1 : stack1.key;
+  stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1;
+  buffer += escapeExpression(stack1) + "\">";
+  stack1 = depth0.runner;
+  stack1 = stack1 == null || stack1 === false ? stack1 : stack1.name;
+  stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1;
+  buffer += escapeExpression(stack1) + "</a>\n  </div>\n  <div class=\"taxi-runner-container\"></div>\n</li>\n";
+  return buffer;});
+
+this["taxi"]["templates"]["driver"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  helpers = helpers || Handlebars.helpers; data = data || {};
+  
+
+
+  return "<ul class=\"taxi-driver-runners\"></ul>\n";});
+
+this["taxi"]["templates"]["taxi"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  helpers = helpers || Handlebars.helpers; data = data || {};
+  
+
+
+  return "<div class=\"taxi-header\">\n  <h1>Taxi.js - <span class=\"taxi-title\"></span></h1>\n  <div class=\"taxi-menu\">\n    <a href=\"#\">menu</a>\n  </div>\n</div>\n<div class=\"taxi-view\"></div>\n";});
 taxi.version = "1.0.0";
 })();
