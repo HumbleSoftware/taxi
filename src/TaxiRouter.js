@@ -2,7 +2,8 @@ taxi.TaxiRouter = Backbone.Router.extend({
   routes : {
     '' : 'home',
     'driver/:driver' : 'driver',
-    'driver/:driver/:runner' : 'driver'
+    'driver/:driver/:runner' : 'driver',
+    'single/:driver/:runner' : 'driver'
   },
   initialize : function (options) {
     this.config = options.config;
@@ -21,10 +22,13 @@ taxi.TaxiRouter = Backbone.Router.extend({
     var
       model = this.drivers.get(driver),
       view = new taxi.DriverView({
-        model : model
+        model : model,
+        runner : runner
       });
     this.application.setView(view);
-    this.application.setTitle(model.get('name') + ' Driver');
-    view.scroll(runner);
+    this.application.setTitle(
+      '<a href="#driver/'+model.get('key')+'">'+model.get('name')+' Driver</a>'
+    );
+    //view.scroll(runner);
   }
 });

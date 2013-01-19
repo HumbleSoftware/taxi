@@ -1,6 +1,9 @@
 taxi.DriverView = Backbone.View.extend({
   className : 'taxi-driver',
   contexts : {},
+  initialize : function (options) {
+    this.runner = options.runner;
+  },
   destroy : function () {
     var
       runners = this.model.get('passengers'),
@@ -27,40 +30,48 @@ taxi.DriverView = Backbone.View.extend({
   },
   renderRunners : function () {
     var
+      runner = this.runner,
+      runners = this.model.get('passengers');
+    if (runner) {
+      this.renderRunner(_.find(runners, function (config) {
+        return config.key === runner;
+      }));
+    } else {
+      _.each(runners, this.renderRunner, this);
+    }
+  },
+  renderRunner : function (runner) {
+    var
       key = this.model.get('key'),
       $runners = this.$runners,
-      runners = this.model.get('passengers'),
       beforeEach = this.model.get('beforeEach'),
-      contexts = this.contexts;
-    _.each(runners, function (runner) {
-      var
-        context = {},
-        $html = $(taxi.templates.runner({
-          'runner' : runner,
-          'driver_key' : key
-        })),
-        $container = $html.find('.taxi-runner-container'),
-        options = {
-          $container : $container
-        };
+      contexts = this.contexts,
+      context = {},
+      $html = $(taxi.templates.runner({
+        'runner' : runner,
+        'driver_key' : key
+      })),
+      $container = $html.find('.taxi-runner-container'),
+      options = {
+        $container : $container
+      };
 
-      try {
-        if (beforeEach) {
-          beforeEach.call(context, options);
-        }
-        if (runner.callback) {
-          runner.callback.call(context, options);
-        }
-      } catch (e) {
-        $container
-          .addClass('taxi-error')
-          .text(e.stack || e.toString());
-        console.error(e);
+    try {
+      if (beforeEach) {
+        beforeEach.call(context, options);
       }
+      if (runner.callback) {
+        runner.callback.call(context, options);
+      }
+    } catch (e) {
+      $container
+        .addClass('taxi-error')
+        .text(e.stack || e.toString());
+      console.error(e);
+    }
 
-      $runners.append($html);
-      contexts[runner.key] = context;
-    });
+    $runners.append($html);
+    contexts[runner.key] = context;
   },
   getRenderData : function () {
     return this.model.toJSON();

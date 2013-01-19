@@ -32,6 +32,6 @@ taxi.TaxiView = Backbone.View.extend({
     }
   },
   setTitle : function (title) {
-    this.$title.text(title || 'A UI component driver.');
+    this.$title.html(title || 'A UI component driver.');
   }
 });
