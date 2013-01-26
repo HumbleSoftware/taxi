@@ -70,12 +70,24 @@ module.exports = function(grunt) {
           '<banner:footer>'
         ],
         dest: 'dist/<%= name %>.js'
+      },
+      'dist-complete': {
+        src: [
+          'dist/vendor.js',
+          '<config:concat.dist.dest>'
+        ],
+        dest: 'dist/<%= name %>-complete.js'
       }
     },
     min: {
       dist: {
         src: ['<banner:meta.banner>', '<config:concat.dist.dest>'],
-        dest: 'dist/<%= name %>.min.js' }
+        dest: 'dist/<%= name %>.min.js'
+      },
+      'dist-complete': {
+        src: ['<banner:meta.banner>', '<config:concat.dist-complete.dest>'],
+        dest: 'dist/<%= name %>-complete.min.js'
+      }
     },
     watch: {
       files: [
