@@ -14,14 +14,6 @@ module.exports = function(grunt) {
     },
     header : ';(function () {',
     footer : 'taxi.version = "<%= pkg.version %>";\n})();',
-    lint: {
-      grunt : ['grunt.js'],
-      src : ['src/**/*.js'],
-      test : ['test/**/*.js']
-    },
-    qunit: {
-      files: ['test/**/*.html']
-    },
     concat: {
       vendor: {
         src: [
@@ -79,67 +71,34 @@ module.exports = function(grunt) {
         dest: 'dist/<%= name %>-complete.js'
       }
     },
-    min: {
-      dist: {
-        src: ['<banner:meta.banner>', '<config:concat.dist.dest>'],
-        dest: 'dist/<%= name %>.min.js'
-      },
-      'dist-complete': {
-        src: ['<banner:meta.banner>', '<config:concat.dist-complete.dest>'],
-        dest: 'dist/<%= name %>-complete.min.js'
-      }
-    },
     watch: {
-      files: [
-        'src/**/*',
-        'test/**/*',
-        'index.html'
-      ],
-      tasks: 'build reload'
-    },
-    jshint: {
-      options: {
-        curly: true,
-        eqeqeq: true,
-        immed: true,
-        latedef: true,
-        newcap: true,
-        noarg: true,
-        sub: true,
-        undef: true,
-        boss: true,
-        eqnull: true,
-        browser: true
-      },
-      globals: {
-        'console': true,
-        '_': true,
-        'Backbone': true,
-        '$': true,
-        'taxi': true
-      },
-      test: {
-        options : {
-          expr: true
-        },
-        globals: {
-          console: true,
-          taxi: true,
-          sinon: true,
-          expect: true
+      // Separate task for livereload for CSS-no-refresh:
+      livereload: {
+        files: [
+          'dist/**/*'
+        ],
+        options: {
+          livereload: true
         }
-      }
-    },
-    uglify: {},
-    server: {
-      port: 8999,
-      base: '.'
-    },
-    reload: {
-      port: 8001,
-      proxy: {
-        port: 8999,
-        host: 'localhost'
+      },
+      css: {
+        files: [
+          'src/**/*.less'
+        ],
+        tasks: [
+          'less:development'
+        ]
+      },
+      scripts: {
+        files: [
+          'src/**/*.js',
+          'src/**/*.hbs',
+          'test/**/*',
+          'index.html'
+        ],
+        tasks: [
+          'build'
+        ]
       }
     },
     handlebars: {
@@ -161,7 +120,7 @@ module.exports = function(grunt) {
       development: {
         options: {
           // Scan for imports:
-          // paths: ["assets/css"]
+          paths: []
         },
         files: {
           "dist/<%= name %>.css": "src/styles/**/*.less"
@@ -177,18 +136,44 @@ module.exports = function(grunt) {
         }
       }
     },
+
+    // Testing:
     mocha: {
       index: ['test/index.html']
+    },
+
+    // The server:
+    connect: {
+      server: {
+        options: {
+          port: 8999,
+          base: '.',
+          middleware : function (connect, options) {
+            return [
+              // Connect middleware to inject livereload script.
+              require('connect-livereload')({
+                port : 35729
+              }),
+              // Serve static files.
+              connect.static(options.base),
+              // Make empty directories browsable.
+              connect.directory(options.base)
+            ];
+          }
+        }
+      }
     }
   });
 
   // Default task.
-  grunt.registerTask('default', 'server reload build watch');
-  grunt.registerTask('build', 'lint handlebars less concat');
-  grunt.registerTask('test', 'build mocha');
+  grunt.registerTask('build', ['handlebars', 'less', 'concat']);
+  grunt.registerTask('test', ['build', 'mocha']);
+  grunt.registerTask('default', ['build', 'connect', 'watch']);
 
   grunt.loadNpmTasks('grunt-mocha');
-  grunt.loadNpmTasks('grunt-reload');
+  grunt.loadNpmTasks('grunt-contrib-concat');
+  grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-contrib-handlebars');
   grunt.loadNpmTasks('grunt-contrib-less');
+  grunt.loadNpmTasks('grunt-contrib-watch');
 };
