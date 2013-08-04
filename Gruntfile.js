@@ -19,8 +19,7 @@ module.exports = function(grunt) {
         src: [
           'vendor/jquery*.js',
           'vendor/underscore*.js',
-          'vendor/backbone*.js',
-          'vendor/handlebars.runtime*.js'
+          'vendor/backbone*.js'
         ],
         dest: 'dist/vendor.js'
       },
@@ -92,7 +91,7 @@ module.exports = function(grunt) {
       scripts: {
         files: [
           'src/**/*.js',
-          'src/**/*.hbs',
+          'src/**/*.html',
           'test/**/*',
           'index.html'
         ],
@@ -101,18 +100,20 @@ module.exports = function(grunt) {
         ]
       }
     },
-    handlebars: {
+    jst: {
       compile: {
         options: {
-          wrapped: true,
           processName: function (name) {
-            // strip src/templates/ and .hbs
-            return name.split('/').slice(2).join('/').slice(0, -4);
+            // strip src/templates/ and .html
+            return name.split('/').slice(2).join('/').slice(0, -5);
+          },
+          templateSettings: {
+            interpolate : /\{\{(.+?)\}\}/g
           },
           namespace: "<%= name %>.templates"
         },
         files: {
-          "dist/templates.js": "src/templates/**/*.hbs"
+          "dist/templates.js": ["src/templates/**/*.html"]
         }
       }
     },
@@ -166,14 +167,14 @@ module.exports = function(grunt) {
   });
 
   // Default task.
-  grunt.registerTask('build', ['handlebars', 'less', 'concat']);
+  grunt.registerTask('build', ['jst', 'less', 'concat']);
   grunt.registerTask('test', ['build', 'mocha']);
   grunt.registerTask('default', ['build', 'connect', 'watch']);
 
   grunt.loadNpmTasks('grunt-mocha');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-connect');
-  grunt.loadNpmTasks('grunt-contrib-handlebars');
+  grunt.loadNpmTasks('grunt-contrib-jst');
   grunt.loadNpmTasks('grunt-contrib-less');
   grunt.loadNpmTasks('grunt-contrib-watch');
 };
