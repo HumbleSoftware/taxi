@@ -77,7 +77,7 @@ module.exports = function(grunt) {
           'dist/**/*'
         ],
         options: {
-          livereload: true
+          livereload: 35730
         }
       },
       css: {
@@ -153,7 +153,7 @@ module.exports = function(grunt) {
             return [
               // Connect middleware to inject livereload script.
               require('connect-livereload')({
-                port : 35729
+                port : 35730
               }),
               // Serve static files.
               connect.static(options.base),
