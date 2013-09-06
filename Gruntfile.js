@@ -4,17 +4,24 @@ module.exports = function(grunt) {
   // Project configuration.
   grunt.initConfig({
     name: 'taxi',
-    pkg: '<json:package.json>',
-    meta: {
-      banner: '/*! <%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
-        '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
-        '<%= pkg.homepage ? "* " + pkg.homepage + "\n" : "" %>' +
-        '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
-        ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */'
-    },
-    header : ';(function () {',
-    footer : 'taxi.version = "<%= pkg.version %>";\n})();',
+    pkg: grunt.file.readJSON('package.json'),
     concat: {
+      'dist': {
+        options : {
+          banner : '/*!\n* <%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
+            '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
+            '<%= pkg.homepage ? "* " + pkg.homepage + "\\n" : "" %>' +
+            '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
+            ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> \n*/\n' + 
+            ';(function () {',
+          footer : 'taxi.version = "<%= pkg.version %>";\n})();'
+        },
+        src: [
+          'dist/src.js',
+          'dist/templates.js'
+        ],
+        dest: 'dist/<%= name %>.js'
+      },
       vendor: {
         src: [
           'vendor/jquery*.js',
@@ -51,16 +58,6 @@ module.exports = function(grunt) {
           'src/**/*.js'
         ],
         dest: 'dist/src.js'
-      },
-      dist: {
-        src: [
-          '<banner:meta.banner>',
-          '<banner:header>',
-          'dist/src.js',
-          'dist/templates.js',
-          '<banner:footer>'
-        ],
-        dest: 'dist/<%= name %>.js'
       },
       'dist-complete': {
         src: [
@@ -165,6 +162,8 @@ module.exports = function(grunt) {
       }
     }
   });
+
+  console.log(grunt.config);
 
   // Default task.
   grunt.registerTask('build', ['jst', 'less', 'concat']);
