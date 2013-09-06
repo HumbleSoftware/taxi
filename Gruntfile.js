@@ -6,7 +6,13 @@ module.exports = function(grunt) {
     name: 'taxi',
     pkg: grunt.file.readJSON('package.json'),
     concat: {
-      'dist': {
+      release: {
+        files: {
+          '<%= name %>.js' : ['dist/<%= name %>.js'],
+          '<%= name %>.css' : ['dist/<%= name %>.css']
+        }
+      },
+      taxi: {
         options : {
           banner : '/*!\n* <%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
             '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
@@ -17,54 +23,39 @@ module.exports = function(grunt) {
           footer : 'taxi.version = "<%= pkg.version %>";\n})();'
         },
         src: [
-          'dist/src.js',
+          'src/taxi.js',
+          'src/DriverModel.js',
+          'src/**/*.js',
           'dist/templates.js'
         ],
         dest: 'dist/<%= name %>.js'
       },
-      vendor: {
-        src: [
-          'vendor/jquery*.js',
-          'vendor/underscore*.js',
-          'vendor/backbone*.js'
-        ],
-        dest: 'dist/vendor.js'
-      },
-      'vendor-test-js': {
-        src: [
-          'vendor/mocha*.js',
-          'vendor/chai*.js',
-          'vendor/sinon*.js',
-          'vendor/grunt-mocha-helper*.js'
-        ],
-        dest: 'dist/vendor-test.js'
-      },
-      'vendor-test-css': {
-        src: [
-          'vendor/mocha*.css'
-        ],
-        dest: 'dist/vendor-test.css'
-      },
-      test: {
-        src: [
-          'test/**/*.js'
-        ],
-        dest: 'dist/test.js'
-      },
-      src: {
-        src: [
-          'src/taxi.js',
-          'src/DriverModel.js',
-          'src/**/*.js'
-        ],
-        dest: 'dist/src.js'
-      },
-      'dist-complete': {
-        src: [
-          'dist/vendor.js',
-          '<%= concat.dist.dest %>'
-        ],
-        dest: 'dist/<%= name %>-complete.js'
+      develop: {
+        files: {
+          // Testing:
+          'dist/vendor-test.js': [
+            'vendor/mocha*.js',
+            'vendor/chai*.js',
+            'vendor/sinon*.js',
+            'vendor/grunt-mocha-helper*.js'
+          ],
+          'dist/vendor-test.css': [
+            'vendor/mocha*.css'
+          ],
+          'dist/test.js': [
+            'test/**/*.js'
+          ],
+          // Source:
+          'dist/vendor.js': [
+            'vendor/jquery*.js',
+            'vendor/underscore*.js',
+            'vendor/backbone*.js'
+          ],
+          'dist/<%= name %>-complete.js' : [
+            'dist/vendor.js',
+            '<%= concat.taxi.dest %>'
+          ]
+        }
       }
     },
     watch: {
@@ -163,12 +154,11 @@ module.exports = function(grunt) {
     }
   });
 
-  console.log(grunt.config);
-
   // Default task.
-  grunt.registerTask('build', ['jst', 'less', 'concat']);
+  grunt.registerTask('build', ['jst', 'less', 'concat:develop', 'concat:taxi']);
   grunt.registerTask('test', ['build', 'mocha']);
   grunt.registerTask('default', ['build', 'connect', 'watch']);
+  grunt.registerTask('release', ['build', 'concat:release']);
 
   grunt.loadNpmTasks('grunt-mocha');
   grunt.loadNpmTasks('grunt-contrib-concat');
