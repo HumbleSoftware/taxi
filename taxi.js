@@ -1,10 +1,9 @@
-/*! taxi.js - v1.0.0 - 2013-01-19
+/*!
+* taxi.js - v0.0.1 - 2013-09-06
 * https://github.com/HumbleSoftware/taxi.js
-* Copyright (c) 2013 Carl Sutherland; Licensed MIT */
-
-;(function () {
-
-taxi = function (el, myConfig) {
+* Copyright (c) 2013 Carl Sutherland; Licensed MIT 
+*/
+;(function () {taxi = function (el, myConfig) {
   var
     config = new taxi.ConfigModel(myConfig || taxi.bdd.data()),
     view = new taxi.TaxiView({
@@ -29,6 +28,30 @@ taxi.DriverModel = Backbone.Model.extend({
   defaults : {
     'key' : '',
     'name' : ''
+  }
+});
+
+taxi.ConfigModel = Backbone.Model.extend({
+  initialize : function (options) {
+    this.drivers = new taxi.DriverCollection(options.drivers);
+  }
+});
+
+taxi.DriverCollection = Backbone.Collection.extend({
+  model : taxi.DriverModel
+});
+
+taxi.DriverListView = Backbone.View.extend({
+  className : 'taxi-driver-list',
+  render : function () {
+    var
+      data = this.getRenderData(),
+      html = taxi.templates.driver_list(data);
+    this.$el.html(html);
+    return this;
+  },
+  getRenderData : function () {
+    return this.collection.toJSON();
   }
 });
 
@@ -121,8 +144,39 @@ taxi.DriverView = Backbone.View.extend({
   }
 });
 
-taxi.DriverCollection = Backbone.Collection.extend({
-  model : taxi.DriverModel
+taxi.TaxiRouter = Backbone.Router.extend({
+  routes : {
+    '' : 'home',
+    'driver/:driver' : 'driver',
+    'driver/:driver/:runner' : 'driver',
+    'single/:driver/:runner' : 'driver'
+  },
+  initialize : function (options) {
+    this.config = options.config;
+    this.drivers = this.config.drivers;
+    this.application = options.application;
+  },
+  home : function () {
+    var
+      view = new taxi.DriverListView({
+        collection : this.drivers
+      });
+    this.application.setView(view);
+    this.application.setTitle();
+  },
+  driver : function (driver, runner) {
+    var
+      model = this.drivers.get(driver),
+      view = new taxi.DriverView({
+        model : model,
+        runner : runner
+      });
+    this.application.setView(view);
+    this.application.setTitle(
+      '<a href="#driver/'+model.get('key')+'">'+model.get('name')+' Driver</a>'
+    );
+    //view.scroll(runner);
+  }
 });
 
 taxi.TaxiView = Backbone.View.extend({
@@ -160,41 +214,6 @@ taxi.TaxiView = Backbone.View.extend({
   },
   setTitle : function (title) {
     this.$title.html(title || 'A UI component driver.');
-  }
-});
-
-taxi.TaxiRouter = Backbone.Router.extend({
-  routes : {
-    '' : 'home',
-    'driver/:driver' : 'driver',
-    'driver/:driver/:runner' : 'driver',
-    'single/:driver/:runner' : 'driver'
-  },
-  initialize : function (options) {
-    this.config = options.config;
-    this.drivers = this.config.drivers;
-    this.application = options.application;
-  },
-  home : function () {
-    var
-      view = new taxi.DriverListView({
-        collection : this.drivers
-      });
-    this.application.setView(view);
-    this.application.setTitle();
-  },
-  driver : function (driver, runner) {
-    var
-      model = this.drivers.get(driver),
-      view = new taxi.DriverView({
-        model : model,
-        runner : runner
-      });
-    this.application.setView(view);
-    this.application.setTitle(
-      '<a href="#driver/'+model.get('key')+'">'+model.get('name')+' Driver</a>'
-    );
-    //view.scroll(runner);
   }
 });
 
@@ -335,90 +354,63 @@ taxi.lib.bdd = function bdd () {
 };
 taxi.bdd = taxi.lib.bdd();
 
-taxi.DriverListView = Backbone.View.extend({
-  className : 'taxi-driver-list',
-  render : function () {
-    var
-      data = this.getRenderData(),
-      html = taxi.templates.driver_list(data);
-    this.$el.html(html);
-    return this;
-  },
-  getRenderData : function () {
-    return this.collection.toJSON();
-  }
-});
-
-taxi.ConfigModel = Backbone.Model.extend({
-  initialize : function (options) {
-    this.drivers = new taxi.DriverCollection(options.drivers);
-  }
-});
-
 this["taxi"] = this["taxi"] || {};
 this["taxi"]["templates"] = this["taxi"]["templates"] || {};
 
-this["taxi"]["templates"]["driver_list"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
-  helpers = helpers || Handlebars.helpers; data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+this["taxi"]["templates"]["driver"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '<ul class="taxi-driver-runners"></ul>\n';
 
-function program1(depth0,data) {
-  
-  var buffer = "", stack1, foundHelper;
-  buffer += "\n  <li><a href=\"#driver/";
-  foundHelper = helpers.key;
-  if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.key; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1) + "\">";
-  foundHelper = helpers.name;
-  if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1) + "</a></li>\n  ";
-  return buffer;}
+}
+return __p
+};
 
-  buffer += "<ul>\n  ";
-  stack1 = {};
-  stack1 = helpers.each.call(depth0, depth0, {hash:stack1,inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n</ul>\n";
-  return buffer;});
+this["taxi"]["templates"]["driver_list"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<ul>\n  ';
+ _.each(obj, function (driver) { ;
+__p += '\n  <li><a href="#driver/' +
+__e( driver.key ) +
+'">' +
+__e( driver.name ) +
+'</a></li>\n  ';
+ }); ;
+__p += '\n</ul>\n';
 
-this["taxi"]["templates"]["runner"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
-  helpers = helpers || Handlebars.helpers; data = data || {};
-  var buffer = "", stack1, foundHelper, functionType="function", escapeExpression=this.escapeExpression;
+}
+return __p
+};
 
+this["taxi"]["templates"]["runner"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '<li class="taxi-runner" data-key="' +
+__e( runner.key ) +
+'">\n  <div class="taxi-runner-name">\n    <a href="#driver/' +
+__e( driver_key ) +
+'/' +
+__e( runner.key ) +
+'">' +
+__e( runner.name ) +
+'</a>\n  </div>\n  <div class="taxi-runner-container"></div>\n</li>\n';
 
-  buffer += "<li class=\"taxi-runner\" data-key=\"";
-  stack1 = depth0.runner;
-  stack1 = stack1 == null || stack1 === false ? stack1 : stack1.key;
-  stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1;
-  buffer += escapeExpression(stack1) + "\">\n  <div class=\"taxi-runner-name\">\n    <a href=\"#driver/";
-  foundHelper = helpers.driver_key;
-  if (foundHelper) { stack1 = foundHelper.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.driver_key; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1) + "/";
-  stack1 = depth0.runner;
-  stack1 = stack1 == null || stack1 === false ? stack1 : stack1.key;
-  stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1;
-  buffer += escapeExpression(stack1) + "\">";
-  stack1 = depth0.runner;
-  stack1 = stack1 == null || stack1 === false ? stack1 : stack1.name;
-  stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1;
-  buffer += escapeExpression(stack1) + "</a>\n  </div>\n  <div class=\"taxi-runner-container\"></div>\n</li>\n";
-  return buffer;});
+}
+return __p
+};
 
-this["taxi"]["templates"]["driver"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
-  helpers = helpers || Handlebars.helpers; data = data || {};
-  
+this["taxi"]["templates"]["taxi"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '<div class="taxi-header">\n  <h1>Taxi.js - <span class="taxi-title"></span></h1>\n  <div class="taxi-menu">\n    <a href="#">menu</a>\n  </div>\n</div>\n<div class="taxi-view"></div>\n';
 
-
-  return "<ul class=\"taxi-driver-runners\"></ul>\n";});
-
-this["taxi"]["templates"]["taxi"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
-  helpers = helpers || Handlebars.helpers; data = data || {};
-  
-
-
-  return "<div class=\"taxi-header\">\n  <h1>Taxi.js - <span class=\"taxi-title\"></span></h1>\n  <div class=\"taxi-menu\">\n    <a href=\"#\">menu</a>\n  </div>\n</div>\n<div class=\"taxi-view\"></div>\n";});
-taxi.version = "1.0.0";
+}
+return __p
+};taxi.version = "0.0.1";
 })();
