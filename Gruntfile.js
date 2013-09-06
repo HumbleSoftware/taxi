@@ -62,7 +62,7 @@ module.exports = function(grunt) {
       'dist-complete': {
         src: [
           'dist/vendor.js',
-          '<config:concat.dist.dest>'
+          '<%= concat.dist.dest %>'
         ],
         dest: 'dist/<%= name %>-complete.js'
       }
