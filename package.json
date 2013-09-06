@@ -1,7 +1,7 @@
 {
   "name": "taxi.js",
   "description": "Taxi.js is a UI component driver.",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "homepage": "https://github.com/HumbleSoftware/taxi.js",
   "author": {
     "name": "Carl Sutherland",
