@@ -151,6 +151,13 @@ module.exports = function(grunt) {
           }
         }
       }
+    },
+
+    release: {
+      options: {
+        npm: false,
+        npmtag: false
+      }
     }
   });
 
@@ -158,7 +165,7 @@ module.exports = function(grunt) {
   grunt.registerTask('build', ['jst', 'less', 'concat:develop', 'concat:taxi']);
   grunt.registerTask('test', ['build', 'mocha']);
   grunt.registerTask('default', ['build', 'connect', 'watch']);
-  grunt.registerTask('release', ['build', 'concat:release']);
+  grunt.registerTask('taxi-release', ['build', 'concat:release']);
 
   grunt.loadNpmTasks('grunt-mocha');
   grunt.loadNpmTasks('grunt-contrib-concat');
@@ -166,4 +173,5 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jst');
   grunt.loadNpmTasks('grunt-contrib-less');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-release');
 };
