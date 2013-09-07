@@ -19,8 +19,8 @@ module.exports = function(grunt) {
             '<%= pkg.homepage ? "* " + pkg.homepage + "\\n" : "" %>' +
             '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
             ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> \n*/\n' + 
-            ';(function () {',
-          footer : 'taxi.version = "<%= pkg.version %>";\n})();'
+            ';(function (Backbone, _) {',
+          footer : 'taxi.version = "<%= pkg.version %>";\n})(Backbone.noConflict(), _.noConflict());'
         },
         src: [
           'src/taxi.js',
