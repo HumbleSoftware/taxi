@@ -7,24 +7,20 @@ taxi.TaxiView = Backbone.View.extend({
       collection : this.config.drivers
     });
   },
-  destroy : function () {
-    this.menu.destroy();
+  remove : function () {
+    this.menu.remove();
+    return Backbone.View.prototype.remove.apply(this, arguments);
   },
-  render : function () {
-    var
-      menu = this.menu,
-      $el = this.$el;
-    menu.render();
+  render : function () {    
     this.$el.html(taxi.templates.taxi());
-    this.$content = $el.find('.taxi-view');
-    this.$title = $el.find('.taxi-title');
-    this.$menu = menu.$el;
-    $el.find('.taxi-menu').append(menu.$el);
+    this.$content = this.$('.taxi-view');
+    this.$title = this.$('.taxi-title');
+    this.$('.taxi-menu').append(this.menu.render().$el);
     return this;
   },
   setView : function (view) {
-    if (this.view && this.view.destroy) {
-      this.view.destroy();
+    if (this.view) {
+      this.view.remove();
     }
     if (view) {
       this.view = view;

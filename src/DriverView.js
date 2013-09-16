@@ -1,30 +1,18 @@
 taxi.DriverView = Backbone.View.extend({
   className : 'taxi-driver',
-  contexts : {},
+  $runnerViews : $(),
   initialize : function (options) {
     this.runner = options.runner;
   },
-  destroy : function () {
-    var
-      runners = this.model.get('passengers'),
-      afterEach = this.model.get('afterEach'),
-      contexts = this.contexts;
-    if (afterEach) {
-      _.each(runners, function (runner) {
-        try {
-          afterEach.call(contexts[runner.key]);
-        } catch (e) {
-          console.error(e);
-        }
-      });
-    }
+  remove : function () {
+    _.invoke(this.$runnerViews, 'remove');
+    return Backbone.View.prototype.remove.apply(this, arguments);
   },
   render : function () {
     var
-      data = this.getRenderData(),
-      html = taxi.templates.driver(data);
+      html = taxi.templates.driver(this.getRenderData());
     this.$el.html(html);
-    this.$runners = this.$el.find('.taxi-driver-runners');
+    this.$runners = this.$('.taxi-driver-runners');
     this.renderRunners();
     return this;
   },
@@ -43,35 +31,17 @@ taxi.DriverView = Backbone.View.extend({
   renderRunner : function (runner) {
     var
       key = this.model.get('key'),
-      $runners = this.$runners,
       beforeEach = this.model.get('beforeEach'),
-      contexts = this.contexts,
-      context = {},
-      $html = $(taxi.templates.runner({
-        'runner' : runner,
-        'driver_key' : key
-      })),
-      $container = $html.find('.taxi-runner-container'),
-      options = {
-        $container : $container
-      };
+      afterEach = this.model.get('afterEach'),
+      runnerView = new taxi.RunnerView({
+        model : runner,
+        driverKey : key,
+        before : beforeEach,
+        after : afterEach
+      });
 
-    try {
-      if (beforeEach) {
-        beforeEach.call(context, options);
-      }
-      if (runner.callback) {
-        runner.callback.call(context, options);
-      }
-    } catch (e) {
-      $container
-        .addClass('taxi-error')
-        .text(e.stack || e.toString());
-      console.error(e);
-    }
-
-    $runners.append($html);
-    contexts[runner.key] = context;
+    this.$runnerViews.append(runnerView);
+    this.$runners.append(runnerView.render().$el);
   },
   getRenderData : function () {
     return this.model.toJSON();

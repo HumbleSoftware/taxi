@@ -27,7 +27,7 @@ taxi.TaxiRouter = Backbone.Router.extend({
       });
     this.application.setView(view);
     this.application.setTitle(
-      '<a href="#driver/'+model.get('key')+'">'+model.get('name')+' Driver</a>'
+      '<a href="#driver/' + model.get('key') + '">' + model.get('name') + ' Driver</a>'
     );
     //view.scroll(runner);
   }

@@ -2,8 +2,7 @@ taxi.DriverListView = Backbone.View.extend({
   className : 'taxi-driver-list',
   render : function () {
     var
-      data = this.getRenderData(),
-      html = taxi.templates.driver_list(data);
+      html = taxi.templates.driver_list(this.getRenderData());
     this.$el.html(html);
     return this;
   },
