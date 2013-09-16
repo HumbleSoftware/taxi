@@ -1,9 +1,9 @@
 /*!
-* taxi.js - v0.0.1 - 2013-09-06
+* taxi.js - v0.0.1 - 2013-09-16
 * https://github.com/HumbleSoftware/taxi.js
 * Copyright (c) 2013 Carl Sutherland; Licensed MIT 
 */
-;(function () {taxi = function (el, myConfig) {
+;(function (Backbone, _) {taxi = function (el, myConfig) {
   var
     config = new taxi.ConfigModel(myConfig || taxi.bdd.data()),
     view = new taxi.TaxiView({
@@ -45,8 +45,7 @@ taxi.DriverListView = Backbone.View.extend({
   className : 'taxi-driver-list',
   render : function () {
     var
-      data = this.getRenderData(),
-      html = taxi.templates.driver_list(data);
+      html = taxi.templates.driver_list(this.getRenderData());
     this.$el.html(html);
     return this;
   },
@@ -57,78 +56,48 @@ taxi.DriverListView = Backbone.View.extend({
 
 taxi.DriverView = Backbone.View.extend({
   className : 'taxi-driver',
-  contexts : {},
+  $passengerViews : $(),
   initialize : function (options) {
-    this.runner = options.runner;
+    this.passenger = options.passenger;
   },
-  destroy : function () {
-    var
-      runners = this.model.get('passengers'),
-      afterEach = this.model.get('afterEach'),
-      contexts = this.contexts;
-    if (afterEach) {
-      _.each(runners, function (runner) {
-        try {
-          afterEach.call(contexts[runner.key]);
-        } catch (e) {
-          console.error(e);
-        }
-      });
-    }
+  remove : function () {
+    _.invoke(this.$passengerViews, 'remove');
+    return Backbone.View.prototype.remove.apply(this, arguments);
   },
   render : function () {
     var
-      data = this.getRenderData(),
-      html = taxi.templates.driver(data);
+      html = taxi.templates.driver(this.getRenderData());
     this.$el.html(html);
-    this.$runners = this.$el.find('.taxi-driver-runners');
-    this.renderRunners();
+    this.$passengers = this.$('.taxi-driver-passengers');
+    this.renderPassengers();
     return this;
   },
-  renderRunners : function () {
+  renderPassengers : function () {
     var
-      runner = this.runner,
-      runners = this.model.get('passengers');
-    if (runner) {
-      this.renderRunner(_.find(runners, function (config) {
-        return config.key === runner;
+      passenger = this.passenger,
+      passengers = this.model.get('passengers');
+    if (passenger) {
+      this.renderPassenger(_.find(passengers, function (config) {
+        return config.key === passenger;
       }));
     } else {
-      _.each(runners, this.renderRunner, this);
+      _.each(passengers, this.renderPassenger, this);
     }
   },
-  renderRunner : function (runner) {
+  renderPassenger : function (passenger) {
     var
       key = this.model.get('key'),
-      $runners = this.$runners,
       beforeEach = this.model.get('beforeEach'),
-      contexts = this.contexts,
-      context = {},
-      $html = $(taxi.templates.runner({
-        'runner' : runner,
-        'driver_key' : key
-      })),
-      $container = $html.find('.taxi-runner-container'),
-      options = {
-        $container : $container
-      };
+      afterEach = this.model.get('afterEach'),
+      passengerView = new taxi.PassengerView({
+        model : passenger,
+        driverKey : key,
+        before : beforeEach,
+        after : afterEach
+      });
 
-    try {
-      if (beforeEach) {
-        beforeEach.call(context, options);
-      }
-      if (runner.callback) {
-        runner.callback.call(context, options);
-      }
-    } catch (e) {
-      $container
-        .addClass('taxi-error')
-        .text(e.stack || e.toString());
-      console.error(e);
-    }
-
-    $runners.append($html);
-    contexts[runner.key] = context;
+    this.$passengerViews.append(passengerView);
+    this.$passengers.append(passengerView.render().$el);
   },
   getRenderData : function () {
     return this.model.toJSON();
@@ -136,14 +105,63 @@ taxi.DriverView = Backbone.View.extend({
   scroll : function (key) {
     var
       selector = '[data-key="' + key + '"]',
-      $runner = this.$runners.children().filter(selector),
-      position = $runner.position();
+      $passenger = this.$passengers.children().filter(selector),
+      position = $passenger.position();
     if (position) {
       this.$el.scrollTop(position.top);
     }
   }
 });
 
+taxi.PassengerView = Backbone.View.extend({  
+  tagName : 'li',
+  className : 'taxi-passenger',
+  context : {},
+  initialize : function (options) {
+    this.driverKey = options.driverKey;
+    this.before = options.before;
+    this.after = options.after;
+  },  
+  remove : function () {
+    if (this.after) {
+      try {
+        this.after.call(this.context);
+      } catch (e) {
+        console.error(e);      
+      }
+    }
+    return Backbone.View.prototype.remove.apply(this, arguments);
+  },
+  render : function () {
+    this.$el.html(taxi.templates.passenger({
+      passenger : this.model,
+      driver_key : this.driverKey
+    }));
+    this.executeCallbacks();
+    return this;
+  },
+  executeCallbacks : function () {
+    var
+      $container = this.$('.taxi-passenger-container'),
+      options = {
+        $container : $container
+      };
+    try {
+      if (this.before) {
+        this.before.call(this.context, options);
+      }
+
+      if (this.model.callback) {
+        this.model.callback.call(this.context, options);
+      }
+    } catch (e) {
+      $container
+        .addClass('taxi-error')
+        .text(e.stack || e.toString());
+      console.error(e);
+    }
+  }
+});
 taxi.TaxiRouter = Backbone.Router.extend({
   routes : {
     '' : 'home',
@@ -173,7 +191,7 @@ taxi.TaxiRouter = Backbone.Router.extend({
       });
     this.application.setView(view);
     this.application.setTitle(
-      '<a href="#driver/'+model.get('key')+'">'+model.get('name')+' Driver</a>'
+      '<a href="#driver/' + model.get('key') + '">' + model.get('name') + ' Driver</a>'
     );
     //view.scroll(runner);
   }
@@ -188,24 +206,20 @@ taxi.TaxiView = Backbone.View.extend({
       collection : this.config.drivers
     });
   },
-  destroy : function () {
-    this.menu.destroy();
+  remove : function () {
+    this.menu.remove();
+    return Backbone.View.prototype.remove.apply(this, arguments);
   },
-  render : function () {
-    var
-      menu = this.menu,
-      $el = this.$el;
-    menu.render();
+  render : function () {    
     this.$el.html(taxi.templates.taxi());
-    this.$content = $el.find('.taxi-view');
-    this.$title = $el.find('.taxi-title');
-    this.$menu = menu.$el;
-    $el.find('.taxi-menu').append(menu.$el);
+    this.$content = this.$('.taxi-view');
+    this.$title = this.$('.taxi-title');
+    this.$('.taxi-menu').append(this.menu.render().$el);
     return this;
   },
   setView : function (view) {
-    if (this.view && this.view.destroy) {
-      this.view.destroy();
+    if (this.view) {
+      this.view.remove();
     }
     if (view) {
       this.view = view;
@@ -361,7 +375,7 @@ this["taxi"]["templates"]["driver"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<ul class="taxi-driver-runners"></ul>\n';
+__p += '<ul class="taxi-driver-passengers"></ul>\n';
 
 }
 return __p
@@ -386,19 +400,19 @@ __p += '\n</ul>\n';
 return __p
 };
 
-this["taxi"]["templates"]["runner"] = function(obj) {
+this["taxi"]["templates"]["passenger"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<li class="taxi-runner" data-key="' +
-__e( runner.key ) +
-'">\n  <div class="taxi-runner-name">\n    <a href="#driver/' +
+__p += '<li class="taxi-passenger" data-key="' +
+__e( passenger.key ) +
+'">\n  <div class="taxi-passenger-name">\n    <a href="#driver/' +
 __e( driver_key ) +
 '/' +
-__e( runner.key ) +
+__e( passenger.key ) +
 '">' +
-__e( runner.name ) +
-'</a>\n  </div>\n  <div class="taxi-runner-container"></div>\n</li>\n';
+__e( passenger.name ) +
+'</a>\n  </div>\n  <div class="taxi-passenger-container"></div>\n</li>\n';
 
 }
 return __p
@@ -413,4 +427,4 @@ __p += '<div class="taxi-header">\n  <h1>Taxi.js - <span class="taxi-title"></sp
 }
 return __p
 };taxi.version = "0.0.1";
-})();
+})(Backbone.noConflict(), _.noConflict());

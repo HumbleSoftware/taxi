@@ -1,47 +1,47 @@
 taxi.DriverView = Backbone.View.extend({
   className : 'taxi-driver',
-  $runnerViews : $(),
+  $passengerViews : $(),
   initialize : function (options) {
-    this.runner = options.runner;
+    this.passenger = options.passenger;
   },
   remove : function () {
-    _.invoke(this.$runnerViews, 'remove');
+    _.invoke(this.$passengerViews, 'remove');
     return Backbone.View.prototype.remove.apply(this, arguments);
   },
   render : function () {
     var
       html = taxi.templates.driver(this.getRenderData());
     this.$el.html(html);
-    this.$runners = this.$('.taxi-driver-runners');
-    this.renderRunners();
+    this.$passengers = this.$('.taxi-driver-passengers');
+    this.renderPassengers();
     return this;
   },
-  renderRunners : function () {
+  renderPassengers : function () {
     var
-      runner = this.runner,
-      runners = this.model.get('passengers');
-    if (runner) {
-      this.renderRunner(_.find(runners, function (config) {
-        return config.key === runner;
+      passenger = this.passenger,
+      passengers = this.model.get('passengers');
+    if (passenger) {
+      this.renderPassenger(_.find(passengers, function (config) {
+        return config.key === passenger;
       }));
     } else {
-      _.each(runners, this.renderRunner, this);
+      _.each(passengers, this.renderPassenger, this);
     }
   },
-  renderRunner : function (runner) {
+  renderPassenger : function (passenger) {
     var
       key = this.model.get('key'),
       beforeEach = this.model.get('beforeEach'),
       afterEach = this.model.get('afterEach'),
-      runnerView = new taxi.RunnerView({
-        model : runner,
+      passengerView = new taxi.PassengerView({
+        model : passenger,
         driverKey : key,
         before : beforeEach,
         after : afterEach
       });
 
-    this.$runnerViews.append(runnerView);
-    this.$runners.append(runnerView.render().$el);
+    this.$passengerViews.append(passengerView);
+    this.$passengers.append(passengerView.render().$el);
   },
   getRenderData : function () {
     return this.model.toJSON();
@@ -49,8 +49,8 @@ taxi.DriverView = Backbone.View.extend({
   scroll : function (key) {
     var
       selector = '[data-key="' + key + '"]',
-      $runner = this.$runners.children().filter(selector),
-      position = $runner.position();
+      $passenger = this.$passengers.children().filter(selector),
+      position = $passenger.position();
     if (position) {
       this.$el.scrollTop(position.top);
     }

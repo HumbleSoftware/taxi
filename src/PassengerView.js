@@ -1,6 +1,6 @@
-taxi.RunnerView = Backbone.View.extend({  
+taxi.PassengerView = Backbone.View.extend({  
   tagName : 'li',
-  className : 'taxi-runner',
+  className : 'taxi-passenger',
   context : {},
   initialize : function (options) {
     this.driverKey = options.driverKey;
@@ -18,8 +18,8 @@ taxi.RunnerView = Backbone.View.extend({
     return Backbone.View.prototype.remove.apply(this, arguments);
   },
   render : function () {
-    this.$el.html(taxi.templates.runner({
-      runner : this.model,
+    this.$el.html(taxi.templates.passenger({
+      passenger : this.model,
       driver_key : this.driverKey
     }));
     this.executeCallbacks();
@@ -27,7 +27,7 @@ taxi.RunnerView = Backbone.View.extend({
   },
   executeCallbacks : function () {
     var
-      $container = this.$('.taxi-runner-container'),
+      $container = this.$('.taxi-passenger-container'),
       options = {
         $container : $container
       };
