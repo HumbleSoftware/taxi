@@ -99,4 +99,40 @@
     color: #AA0000;
     white-space: pre;
   }
+
+  .tabs {
+    text-align: right;
+    /*margin: 1em 0 1em 0;*/
+    border-bottom: 1px solid #888888;
+    font: bold 11px sans-serif;
+    list-style-type: none;
+    padding: 3px 10px 3px 10px;
+  }
+
+  .tabs li {
+    display: inline;
+    padding: 3px 4px;
+    border: 1px solid #888888;
+    margin-right: 0px;
+    text-decoration: none;
+    border-bottom: none;
+    background-color: #eeeeee;
+  }
+
+  .tabs li:hover {
+    background: #ffffff;
+    cursor: pointer;
+  }
+
+  .tabs li.selected {
+    background: #ffffff;
+    background-color: #ffffff;
+    position: relative;
+    top: 1px;
+    padding-top: 4px;
+  }
+
+  .before-editor, .callback-editor, .after-editor {
+    display: none;
+  }
 }

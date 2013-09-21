@@ -49,7 +49,11 @@ module.exports = function(grunt) {
           'dist/vendor.js': [
             'vendor/jquery*.js',
             'vendor/underscore*.js',
-            'vendor/backbone*.js'
+            'vendor/backbone*.js',
+            'vendor/codemirror*.js'
+          ],
+          'dist/vendor.css': [
+            'vendor/codemirror*.css'
           ],
           'dist/<%= name %>-complete.js' : [
             'dist/vendor.js',
