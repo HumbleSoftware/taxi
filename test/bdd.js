@@ -51,7 +51,7 @@ describe('bdd', function () {
       function test () {
         bdd.driver(null, '1234');
       }
-      expect(test).to.throws('invalid driver name');
+      expect(test).to.throw('invalid driver name');
     });
     it('throws an error for invalid callback', function () {
       var
@@ -59,7 +59,7 @@ describe('bdd', function () {
       function test () {
         bdd.driver('test');
       }
-      expect(test).to.throws('invalid driver callback');
+      expect(test).to.throw('invalid driver callback');
     });
     it('throws an error when driving a driver', function () {
       var
@@ -69,7 +69,7 @@ describe('bdd', function () {
           bdd.driver('test 2', function () {});
         });
       }
-      expect(test).to.throws('already driving');
+      expect(test).to.throw('already driving');
     });
   });
 
@@ -118,7 +118,7 @@ describe('bdd', function () {
           bdd.passenger(null);
         });
       }
-      expect(test).to.throws('invalid passenger name');
+      expect(test).to.throw('invalid passenger name');
     });
     it('throws an error for invalid callback', function () {
       var
@@ -128,7 +128,7 @@ describe('bdd', function () {
           bdd.passenger('a');
         });
       }
-      expect(test).to.throws('invalid passenger callback');
+      expect(test).to.throw('invalid passenger callback');
     });
     it('throws an error without a driver', function () {
       var
@@ -224,7 +224,7 @@ describe('bdd', function () {
           });
         });
       }
-      expect(test).to.throws('no driver');
+      expect(test).to.throw('no driver');
     });
   });
   
@@ -275,7 +275,7 @@ describe('bdd', function () {
       function test () {
         bdd.beforeEach('thing');
       }
-      expect(test).to.throws('invalid ' + type + ' callback');
+      expect(test).to.throw('invalid ' + type + ' callback');
     });
   }
 });
@@ -312,4 +312,19 @@ describe('Driver Collection', function () {
       });
     expect(driverCollection.get('1')).to.be.an.instanceOf(taxi.DriverModel);
   });
+});
+
+describe('Config Model', function () {
+  it('throws TypeError if drivers are not set', function () {
+    function test() {
+      var
+        configModel = new taxi.ConfigModel();
+    }
+    expect(test).to.throw(TypeError, /Cannot read property 'drivers'/);
+  });
+  it('creates a DriverCollection', function () {
+    var
+      configModel = new taxi.ConfigModel({});    
+    expect(configModel.drivers).to.be.an.instanceOf(taxi.DriverCollection);
+  })
 });
