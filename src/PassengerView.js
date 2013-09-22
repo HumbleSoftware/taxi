@@ -1,7 +1,7 @@
 taxi.PassengerView = Backbone.View.extend({  
   tagName : 'li',
   className : 'taxi-passenger',
-  context : {},
+  emptyFunction : 'function (options) {\n}',
   events : {
     'click .tab' : 'switchTabs'
   },
@@ -31,6 +31,7 @@ taxi.PassengerView = Backbone.View.extend({
     this.before = options.before;
     this.after = options.after;    
     this.editors = [];
+    this.context = {};
   },  
   remove : function () {
     if (this.after) {
@@ -53,9 +54,9 @@ taxi.PassengerView = Backbone.View.extend({
     return this;
   },
   createEditors : function () {    
-    this.editors['before-editor'] = this.createEditor('.before-editor', this.before || '');
-    this.editors['callback-editor'] = this.createEditor('.callback-editor', this.model.callback || '');
-    this.editors['after-editor'] = this.createEditor('.after-editor', this.after || '');
+    this.editors['before-editor'] = this.createEditor('.before-editor', this.before || this.emptyFunction);
+    this.editors['callback-editor'] = this.createEditor('.callback-editor', this.model.callback || this.emptyFunction);
+    this.editors['after-editor'] = this.createEditor('.after-editor', this.after || this.emptyFunction);
   },
   createEditor : function (classSelector, value) {
     return CodeMirror(this.$(classSelector)[0], { 

@@ -1,11 +1,12 @@
 taxi.DriverView = Backbone.View.extend({
   className : 'taxi-driver',
-  $passengerViews : $(),
   initialize : function (options) {
     this.passenger = options.passenger;
+    this.passengerViews = [];
   },
   remove : function () {
-    _.invoke(this.$passengerViews, 'remove');
+    _.invoke(this.passengerViews, 'remove');
+    this.passengerViews = [];
     return Backbone.View.prototype.remove.apply(this, arguments);
   },
   render : function () {
@@ -40,7 +41,7 @@ taxi.DriverView = Backbone.View.extend({
         after : afterEach
       });
 
-    this.$passengerViews.append(passengerView);
+    this.passengerViews.push(passengerView);
     this.$passengers.append(passengerView.render().$el);
   },
   getRenderData : function () {
