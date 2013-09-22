@@ -11,10 +11,15 @@ describe('bdd', function () {
     this.bdd = taxi.lib.bdd();
   });
 
-  it('instantiates', function () {});
-
+  describe('taxi()', function() {
+    it('instantiates', function () {});
+    it('creates a global variable for the namespace', function () {
+      expect(taxi).to.exist;
+    });
+  });
+  
   // driver()
-  describe('driver()', function () {
+  describe('driver()', function () {      
     it('adds a driver', function () {
       var
         driver = this.bdd.driver('test', function () {});
@@ -222,7 +227,7 @@ describe('bdd', function () {
       expect(test).to.throws('no driver');
     });
   });
-
+  
   function dataEachHelper (type) {
     it('adds ' + type + ' to data', function () {
       var
@@ -273,4 +278,28 @@ describe('bdd', function () {
       expect(test).to.throws('invalid ' + type + ' callback');
     });
   }
+});
+
+describe('Driver Model', function () {
+  describe('Initilization', function () {
+    beforeEach(function () {
+      this.driverModel = new taxi.DriverModel();
+    });
+    it('should have an empty key by default', function () {
+      expect(this.driverModel.get('key')).to.be.empty;
+    });
+    it('should have an empty name by default', function () {
+      expect(this.driverModel.get('name')).to.be.empty;
+    });
+  });
+  describe('ID Attribute', function () {
+    it('should use the key attribute as ID', function () {
+      var 
+        driverModel = new taxi.DriverModel({ 
+          key : '1'
+        });
+      expect(driverModel.id).to.equal(driverModel.get('key'));
+      expect(driverModel.id).to.equal('1');
+    });
+  });
 });
