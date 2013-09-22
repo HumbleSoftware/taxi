@@ -3,13 +3,9 @@
     <a href="#driver/<%- driver_key %>/<%- passenger.key %>"><%- passenger.name %></a>
   </div>
   <ul class="tabs">
-    <li id="taxi-passenger-container" class="tab selected">UI</li>
-    <li id="before-editor" class="tab">Before</li>
-    <li id="callback-editor" class="tab">Callback</li>
-    <li id="after-editor" class="tab">After</li>
+    <li data-control="taxi-passenger-container" class="tab active">UI</li>
+    <li data-control="callback-editor" class="tab">Callback</li>
   </ul>
   <div class="taxi-passenger-container"></div>
-  <div class="before-editor"></div>
   <div class="callback-editor"></div>
-  <div class="after-editor"></div>
 </li>

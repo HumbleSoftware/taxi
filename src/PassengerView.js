@@ -3,29 +3,8 @@ taxi.PassengerView = Backbone.View.extend({
   className : 'taxi-passenger',
   emptyFunction : 'function (options) {\n}',
   events : {
-    'click .tab' : 'switchTabs'
-  },
-  switchTabs : function (event) {
-    var 
-      $lastSelected = this.$tabs.children('.selected'),
-      lastSelectedId = $lastSelected.attr('id'),
-      $selected = this.$(event.currentTarget),
-      selectedId = $selected.attr('id');
-      
-    $lastSelected.removeClass('selected');
-    $selected.addClass('selected');    
-
-    this.$('.' + lastSelectedId).hide();
-    this.$('.' + selectedId).show();    
-    if (selectedId === 'taxi-passenger-container') {
-      this.before = eval('(' + this.editors['before-editor'].getValue() + ')');
-      this.model.callback = eval('(' + this.editors['callback-editor'].getValue() + ')');
-      this.after = eval('(' + this.editors['after-editor'].getValue() + ')');
-      this.render();
-    } else {
-      this.editors[selectedId].refresh();
-    }
-  },
+    'click .tab' : 'onTab'
+  },  
   initialize : function (options) {
     this.driverKey = options.driverKey;
     this.before = options.before;
@@ -54,9 +33,8 @@ taxi.PassengerView = Backbone.View.extend({
     return this;
   },
   createEditors : function () {    
-    this.editors['before-editor'] = this.createEditor('.before-editor', this.before || this.emptyFunction);
-    this.editors['callback-editor'] = this.createEditor('.callback-editor', this.model.callback || this.emptyFunction);
-    this.editors['after-editor'] = this.createEditor('.after-editor', this.after || this.emptyFunction);
+    this.editors['callback-editor'] = this.createEditor('.callback-editor', 
+      this.model.callback || this.emptyFunction);
   },
   createEditor : function (classSelector, value) {
     return CodeMirror(this.$(classSelector)[0], { 
@@ -88,6 +66,25 @@ taxi.PassengerView = Backbone.View.extend({
         .addClass('taxi-error')
         .text(e.stack || e.toString());
       console.error(e);
+    }
+  },
+  onTab : function (event) {
+    var 
+      $lastActive = this.$tabs.children('.active'),
+      lastActiveClassName = $lastActive.data('control'),
+      $active = this.$(event.currentTarget),
+      activeClassName = $active.data('control');
+      
+    $lastActive.removeClass('active');
+    $active.addClass('active');    
+
+    this.$('.' + lastActiveClassName).hide();
+    this.$('.' + activeClassName).show();    
+    if (activeClassName === 'taxi-passenger-container') {
+      this.model.callback = eval('(' + this.editors['callback-editor'].getValue() + ')');
+      this.render();
+    } else {
+      this.editors[activeClassName].refresh();
     }
   }
 });
