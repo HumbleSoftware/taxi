@@ -1,23 +1,23 @@
-taxi.PassengerView = Backbone.View.extend({  
+taxi.PassengerView = Backbone.View.extend({
   tagName : 'li',
   className : 'taxi-passenger',
   emptyFunction : 'function (options) {\n}',
   events : {
     'click .tab' : 'onTab'
-  },  
+  },
   initialize : function (options) {
     this.driverKey = options.driverKey;
     this.before = options.before;
-    this.after = options.after;    
+    this.after = options.after;
     this.editors = [];
     this.context = {};
-  },  
+  },
   remove : function () {
     if (this.after) {
       try {
         this.after.call(this.context);
       } catch (e) {
-        console.error(e);      
+        console.error(e);
       }
     }
     return Backbone.View.prototype.remove.apply(this, arguments);
@@ -27,17 +27,17 @@ taxi.PassengerView = Backbone.View.extend({
       passenger : this.model,
       driver_key : this.driverKey
     }));
-    this.$tabs = this.$('.tabs');  
-    this.createEditors();    
+    this.$tabs = this.$('.tabs');
+    this.createEditors();
     this.executeCallbacks();
     return this;
   },
-  createEditors : function () {    
-    this.editors['callback-editor'] = this.createEditor('.callback-editor', 
+  createEditors : function () {
+    this.editors['callback-editor'] = this.createEditor('.callback-editor',
       this.model.callback || this.emptyFunction);
   },
   createEditor : function (classSelector, value) {
-    return CodeMirror(this.$(classSelector)[0], { 
+    return CodeMirror(this.$(classSelector)[0], {
       value: value.toString(),
       mode: 'text/javascript',
       lineNumbers: true,
@@ -45,7 +45,7 @@ taxi.PassengerView = Backbone.View.extend({
       lineWrapping: true,
       viewportMargin: Infinity,
       autofocus: true
-    }); 
+    });
   },
   executeCallbacks : function () {
     var
@@ -69,17 +69,17 @@ taxi.PassengerView = Backbone.View.extend({
     }
   },
   onTab : function (event) {
-    var 
+    var
       $lastActive = this.$tabs.children('.active'),
       lastActiveClassName = $lastActive.data('control'),
       $active = this.$(event.currentTarget),
       activeClassName = $active.data('control');
-      
+
     $lastActive.removeClass('active');
-    $active.addClass('active');    
+    $active.addClass('active');
 
     this.$('.' + lastActiveClassName).hide();
-    this.$('.' + activeClassName).show();    
+    this.$('.' + activeClassName).show();
     if (activeClassName === 'taxi-passenger-container') {
       this.model.callback = eval('(' + this.editors['callback-editor'].getValue() + ')');
       this.render();
