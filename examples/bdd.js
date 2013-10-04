@@ -1,12 +1,10 @@
 driver('Component One', function () {
   passenger('One Default', function (options) {
-    var
-      $container = options.$container;
+    var $container = options.$container;
     $container.html('hello world');
   });
   passenger('One Special', function (options) {
-    var
-      $container = options.$container;
+    var $container = options.$container;
     $container.html('hello world');
   });
 });
@@ -21,8 +19,7 @@ driver('Component Two', function () {
 });
 driver('Error Component', function () {
   passenger('native error', function () {
-    var
-      object = {};
+    var object = {};
     object.test();
   });
   passenger('custom error', function () {
