@@ -1,5 +1,5 @@
 /*!
-* taxi.js - v0.0.1 - 2013-09-17
+* taxi.js - v0.0.1 - 2013-10-04
 * https://github.com/HumbleSoftware/taxi.js
 * Copyright (c) 2013 Carl Sutherland; Licensed MIT 
 */
@@ -56,12 +56,13 @@ taxi.DriverListView = Backbone.View.extend({
 
 taxi.DriverView = Backbone.View.extend({
   className : 'taxi-driver',
-  $passengerViews : $(),
   initialize : function (options) {
     this.passenger = options.passenger;
+    this.passengerViews = [];
   },
   remove : function () {
-    _.invoke(this.$passengerViews, 'remove');
+    _.invoke(this.passengerViews, 'remove');
+    this.passengerViews = [];
     return Backbone.View.prototype.remove.apply(this, arguments);
   },
   render : function () {
@@ -96,7 +97,7 @@ taxi.DriverView = Backbone.View.extend({
         after : afterEach
       });
 
-    this.$passengerViews.append(passengerView);
+    this.passengerViews.push(passengerView);
     this.$passengers.append(passengerView.render().$el);
   },
   getRenderData : function () {
@@ -113,21 +114,26 @@ taxi.DriverView = Backbone.View.extend({
   }
 });
 
-taxi.PassengerView = Backbone.View.extend({  
+taxi.PassengerView = Backbone.View.extend({
   tagName : 'li',
   className : 'taxi-passenger',
-  context : {},
+  emptyFunction : 'function (options) {\n}',
+  events : {
+    'click .tab' : 'onTab'
+  },
   initialize : function (options) {
     this.driverKey = options.driverKey;
     this.before = options.before;
     this.after = options.after;
-  },  
+    this.editors = [];
+    this.context = {};
+  },
   remove : function () {
     if (this.after) {
       try {
         this.after.call(this.context);
       } catch (e) {
-        console.error(e);      
+        console.error(e);
       }
     }
     return Backbone.View.prototype.remove.apply(this, arguments);
@@ -137,17 +143,25 @@ taxi.PassengerView = Backbone.View.extend({
       passenger : this.model,
       driver_key : this.driverKey
     }));
-    codeMirror = CodeMirror(this.$('.editor')[0], { 
-      value: 'function () { alert(1); }',
+    this.$tabs = this.$('.tabs');
+    this.createEditors();
+    this.executeCallbacks();
+    return this;
+  },
+  createEditors : function () {
+    this.editors['callback-editor'] = this.createEditor('.callback-editor',
+      this.model.callback || this.emptyFunction);
+  },
+  createEditor : function (classSelector, value) {
+    return CodeMirror(this.$(classSelector)[0], {
+      value: value.toString(),
       mode: 'text/javascript',
       lineNumbers: true,
       tabSize: 2,
       lineWrapping: true,
       viewportMargin: Infinity,
       autofocus: true
-    });    
-    this.executeCallbacks();
-    return this;
+    });
   },
   executeCallbacks : function () {
     var
@@ -169,8 +183,28 @@ taxi.PassengerView = Backbone.View.extend({
         .text(e.stack || e.toString());
       console.error(e);
     }
+  },
+  onTab : function (event) {
+    var
+      $lastActive = this.$tabs.children('.active'),
+      lastActiveClassName = $lastActive.data('control'),
+      $active = this.$(event.currentTarget),
+      activeClassName = $active.data('control');
+
+    $lastActive.removeClass('active');
+    $active.addClass('active');
+
+    this.$('.' + lastActiveClassName).hide();
+    this.$('.' + activeClassName).show();
+    if (activeClassName === 'taxi-passenger-container') {
+      this.model.callback = eval('(' + this.editors['callback-editor'].getValue() + ')');
+      this.render();
+    } else {
+      this.editors[activeClassName].refresh();
+    }
   }
 });
+
 taxi.TaxiRouter = Backbone.Router.extend({
   routes : {
     '' : 'home',
@@ -421,7 +455,7 @@ __e( driver_key ) +
 __e( passenger.key ) +
 '">' +
 __e( passenger.name ) +
-'</a>\n  </div>\n  <div class="editor"></div>\n  <div class="taxi-passenger-container"></div>\n</li>\n';
+'</a>\n  </div>\n  <ul class="tabs">\n    <li data-control="taxi-passenger-container" class="tab active">UI</li>\n    <li data-control="callback-editor" class="tab">Callback</li>\n  </ul>\n  <div class="taxi-passenger-container"></div>\n  <div class="callback-editor"></div>\n</li>\n';
 
 }
 return __p
