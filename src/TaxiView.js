@@ -11,7 +11,7 @@ taxi.TaxiView = Backbone.View.extend({
     this.menu.remove();
     return Backbone.View.prototype.remove.apply(this, arguments);
   },
-  render : function () {    
+  render : function () {
     this.$el.html(taxi.templates.taxi());
     this.$content = this.$('.taxi-view');
     this.$title = this.$('.taxi-title');

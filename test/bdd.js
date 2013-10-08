@@ -17,9 +17,9 @@ describe('bdd', function () {
       expect(taxi).to.exist;
     });
   });
-  
+
   // driver()
-  describe('driver()', function () {      
+  describe('driver()', function () {
     it('adds a driver', function () {
       var
         driver = this.bdd.driver('test', function () {});
@@ -227,7 +227,7 @@ describe('bdd', function () {
       expect(test).to.throw('no driver');
     });
   });
-  
+
   function dataEachHelper (type) {
     it('adds ' + type + ' to data', function () {
       var

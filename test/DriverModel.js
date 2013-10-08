@@ -12,8 +12,8 @@ describe('Driver Model', function () {
   });
   describe('ID Attribute', function () {
     it('should use the key attribute as ID', function () {
-      var 
-        driverModel = new taxi.DriverModel({ 
+      var
+        driverModel = new taxi.DriverModel({
           key : '1'
         });
       expect(driverModel.id).to.equal(driverModel.get('key'));

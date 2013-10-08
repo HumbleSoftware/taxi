@@ -8,7 +8,7 @@ describe('Config Model', function () {
   });
   it('creates a DriverCollection', function () {
     var
-      configModel = new taxi.ConfigModel({});    
+      configModel = new taxi.ConfigModel({});
     expect(configModel.drivers).to.be.an.instanceOf(taxi.DriverCollection);
   })
 });
