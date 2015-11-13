@@ -1,0 +1,20 @@
+  <html>
+  <head>
+    <link rel="stylesheet" href="./dist/taxi.css" />
+    <script type="text/javascript" src="./dist/vendor.js"></script>
+    <script type="text/javascript" src="./dist/taxi.js"></script>
+    <script type="text/javascript">
+      taxi.bdd.inject(this);
+    </script>
+    <script type="text/javascript" src="bdd.js"></script>
+  </head>
+  <body>
+    <div id="taxi"></div>
+    <script>
+      $(function () {
+        taxi($('#taxi'));
+      });
+    </script>
+  </body>
+</html>
+
