@@ -64,6 +64,22 @@
               ]
             },
             {
+              key : 'component-four',
+              name : 'Control Component',
+              passengers : [
+                {
+                  key : 'case-one',
+                  name : 'Do Something',
+                  callback : function (options) {
+                    options.addControl('Say Hi', function () {
+                      options.$container.append('<div>Hello World</div>');
+                    });
+                    options.$container.html('What do you have to say?');
+                  }
+                }
+              ]
+            },
+            {
               key : 'comp-three',
               name : 'Error Component',
               passengers : [
