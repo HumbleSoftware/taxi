@@ -52,7 +52,11 @@ taxi.DriverView = Backbone.View.extend({
         'driver_key' : key
       })),
       $container = $html.find('.taxi-runner-container'),
+      controls = new taxi.ControlsView(),
       options = {
+        addControl : function () {
+          controls.addControl.apply(controls, arguments);
+        },
         $container : $container
       };
 
@@ -70,6 +74,9 @@ taxi.DriverView = Backbone.View.extend({
       console.error(e);
     }
 
+
+    $html.find('.taxi-runner-name').append(controls.el);
+    controls.render();
     $runners.append($html);
     contexts[runner.key] = context;
   },

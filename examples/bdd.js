@@ -19,6 +19,14 @@ driver('Component Two', function () {
     options.$container.append('<p>extra special content</p>');
   });
 });
+driver('Control Component', function () {
+  passenger('Do Something', function (options) {
+    options.addControl('Say Hi', function () {
+      options.$container.append('<div>Hello World</div>');
+    });
+    options.$container.html('What do you have to say?');
+  });
+});
 driver('Error Component', function () {
   passenger('native error', function () {
     var
