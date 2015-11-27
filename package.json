@@ -2,22 +2,22 @@
   "name": "@humblesoftware/taxi",
   "description": "Taxi.js is a UI component driver.",
   "version": "0.0.3",
-  "homepage": "https://github.com/HumbleSoftware/taxi.js",
+  "homepage": "https://github.com/HumbleSoftware/taxi",
   "author": {
     "name": "Carl Sutherland",
     "url": "http://humblesoftware.com/"
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:HumbleSoftware/taxi.js.git"
+    "url": "git@github.com:HumbleSoftware/taxi.git"
   },
   "bugs": {
-    "url": "https://github.com/HumbleSoftware/taxi.js/issues"
+    "url": "https://github.com/HumbleSoftware/taxi/issues"
   },
   "licenses": [
     {
       "type": "MIT",
-      "url": "https://github.com/HumbleSoftware/taxi.js/blog/master/LICENSE"
+      "url": "https://github.com/HumbleSoftware/taxi/blog/master/LICENSE"
     }
   ],
   "engines": {
